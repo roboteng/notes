@@ -17,6 +17,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Use Elm
-    - uses: justgook/setup-elm@1.2.0
+      uses: justgook/setup-elm@1.2.0
     - run: elm make client/src/Main.elm
     - run: elm-test
