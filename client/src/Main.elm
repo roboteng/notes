@@ -1,4 +1,4 @@
-module Main exposing (main)
+module Main exposing (..)
 
 import Browser exposing (sandbox)
 import Html exposing (Html, h1, text)
@@ -15,7 +15,7 @@ main =
 
 view : Model -> Html a
 view _ =
-    h1 [] [ text "Hello world!" ]
+    h1 [] [ text "Notes" ]
 
 
 type alias Model =
