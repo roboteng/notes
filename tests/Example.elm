@@ -5,8 +5,8 @@ import Main exposing (Msg(..), init, initNote, update)
 import Test exposing (Test, describe, test)
 
 
-suite : Test
-suite =
+emptyModel : Test
+emptyModel =
     describe "Given an empty model"
         (let
             model =
@@ -26,14 +26,14 @@ suite =
         )
 
 
-other : Test
-other =
+editNotePage : Test
+editNotePage =
     describe "Given the Edit Note page is open"
         (let
             model =
                 { init | newNote = Just { title = "Title", description = "Description" } }
          in
-         [ describe "When the user save a note with data"
+         [ describe "When the user save a note"
             (let
                 action =
                     SaveNote
@@ -41,8 +41,14 @@ other =
              [ test "Then the newNote is Nothing"
                 (\_ ->
                     Expect.equal
-                        { notes = [ { title = "Title", description = "Description" } ], newNote = Nothing }
-                        (update action model)
+                        Nothing
+                        (update action model).newNote
+                )
+             , test "Then the notes list is populated"
+                (\_ ->
+                    Expect.equal
+                        [ { title = "Title", description = "Description" } ]
+                        (update action model).notes
                 )
              ]
             )
