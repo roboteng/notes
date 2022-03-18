@@ -1,8 +1,6 @@
 module Example exposing (..)
 
-import Expect exposing (Expectation)
-import Html exposing (h1, text)
-import Main exposing (view)
+import Expect
 import Test exposing (Test, describe, test)
 
 
@@ -10,7 +8,7 @@ suite : Test
 suite =
     describe "Given the user is on the home page"
         [ test
-            "Then \"Ntes\" is visible"
+            "2 + 2 = 4"
           <|
-            \_ -> Expect.equal (h1 [] [ text "Notes" ]) (view {})
+            \_ -> Expect.equal (2 + 2) 4
         ]
