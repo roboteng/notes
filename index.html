@@ -6141,17 +6141,50 @@ var $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled = function (vdom) {
 var $rtfeldman$elm_css$Html$Styled$toUnstyled = $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled;
 var $author$project$Main$update = F2(
 	function (msg, model) {
-		if (msg.$ === 'EditNote') {
-			return _Utils_update(
-				model,
-				{
-					newNote: $elm$core$Maybe$Just(
-						{description: '', title: ''})
-				});
-		} else {
-			return _Utils_update(
-				model,
-				{newNote: $elm$core$Maybe$Nothing});
+		switch (msg.$) {
+			case 'EditNote':
+				return _Utils_update(
+					model,
+					{
+						newNote: $elm$core$Maybe$Just(
+							{description: '', title: ''})
+					});
+			case 'SaveNote':
+				return _Utils_update(
+					model,
+					{newNote: $elm$core$Maybe$Nothing});
+			case 'UpdateTitle':
+				var title = msg.a;
+				var _v1 = model.newNote;
+				if (_v1.$ === 'Nothing') {
+					return model;
+				} else {
+					var note = _v1.a;
+					return _Utils_update(
+						model,
+						{
+							newNote: $elm$core$Maybe$Just(
+								_Utils_update(
+									note,
+									{title: title}))
+						});
+				}
+			default:
+				var desc = msg.a;
+				var _v2 = model.newNote;
+				if (_v2.$ === 'Nothing') {
+					return model;
+				} else {
+					var note = _v2.a;
+					return _Utils_update(
+						model,
+						{
+							newNote: $elm$core$Maybe$Just(
+								_Utils_update(
+									note,
+									{description: desc}))
+						});
+				}
 		}
 	});
 var $author$project$Main$EditNote = {$: 'EditNote'};

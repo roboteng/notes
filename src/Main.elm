@@ -29,6 +29,8 @@ type alias NewNoteForm =
 type Msg
     = EditNote
     | SaveNote
+    | UpdateTitle String
+    | UpdateDescription String
 
 
 init : Model
@@ -47,6 +49,26 @@ update msg model =
 
         SaveNote ->
             { model | newNote = Nothing }
+
+        UpdateTitle title ->
+            case model.newNote of
+                Nothing ->
+                    model
+
+                Just note ->
+                    { model
+                        | newNote = Just { note | title = title }
+                    }
+
+        UpdateDescription desc ->
+            case model.newNote of
+                Nothing ->
+                    model
+
+                Just note ->
+                    { model
+                        | newNote = Just { note | description = desc }
+                    }
 
 
 
