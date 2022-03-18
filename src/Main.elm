@@ -1,24 +1,28 @@
 module Main exposing (..)
 
-import Browser exposing (sandbox)
-import Html exposing (Html, h1, text)
+import Browser
+import Css exposing (..)
+import Html
+import Html.Styled exposing (..)
+import Html.Styled.Attributes exposing (class, css, href, src)
+import Html.Styled.Events exposing (onClick)
 
 
 main : Program () {} a
 main =
-    sandbox
+    Browser.sandbox
         { init = init
         , update = update
-        , view = view
+        , view = view >> toUnstyled
         }
 
 
-view : Model -> Html a
-view _ =
-    h1 [] [ text "Notes" ]
-
-
 type alias Model =
+    {}
+
+
+init : {}
+init =
     {}
 
 
@@ -27,6 +31,15 @@ update _ x =
     x
 
 
-init : {}
-init =
-    {}
+
+-- VIEW
+
+
+view : Model -> Html a
+view _ =
+    div
+        [ css
+            [ backgroundColor (rgb 100 100 100), color (rgb 200 200 200) ]
+        ]
+        [ h1 [] [ text "Notes" ]
+        ]
