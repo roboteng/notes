@@ -17,10 +17,12 @@ main =
 
 
 type alias Model =
-    { newNote : Maybe NewNoteForm }
+    { newNote : Maybe Note
+    , notes : List Note
+    }
 
 
-type alias NewNoteForm =
+type alias Note =
     { title : String
     , description : String
     }
@@ -36,7 +38,13 @@ type Msg
 init : Model
 init =
     { newNote = Nothing
+    , notes = []
     }
+
+
+initNote : Note
+initNote =
+    { title = "", description = "" }
 
 
 update : Msg -> Model -> Model
@@ -44,11 +52,19 @@ update msg model =
     case msg of
         EditNote ->
             { model
-                | newNote = Just { title = "", description = "" }
+                | newNote = Just initNote
             }
 
         SaveNote ->
-            { model | newNote = Nothing }
+            case model.newNote of
+                Nothing ->
+                    model
+
+                Just note ->
+                    { model
+                        | newNote = Nothing
+                        , notes = model.notes ++ [ note ]
+                    }
 
         UpdateTitle title ->
             case model.newNote of
@@ -96,5 +112,11 @@ view model =
 
                 Nothing ->
                     div [] []
+            , ul [] (List.map showNote model.notes)
             ]
         ]
+
+
+showNote : Note -> Html msg
+showNote note =
+    li [] [ text note.title ]
