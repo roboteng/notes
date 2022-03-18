@@ -94,9 +94,7 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div
-        [ css
-            [ backgroundColor (rgb 100 100 100), color (rgb 200 200 200) ]
-        ]
+        []
         [ nav []
             [ h1 [] [ text "Notes" ]
             ]
@@ -104,11 +102,7 @@ view model =
             [ button [ onClick EditNote ] [ text "Add New Note" ]
             , case model.newNote of
                 Just note ->
-                    Html.Styled.form [ onSubmit SaveNote ]
-                        [ input [ value note.title ] []
-                        , input [ value note.description ] []
-                        , button [ onClick SaveNote ] [ text "Save" ]
-                        ]
+                    newNoteForm note
 
                 Nothing ->
                     div [] []
@@ -117,6 +111,15 @@ view model =
         ]
 
 
-showNote : Note -> Html msg
+newNoteForm : Note -> Html Msg
+newNoteForm note =
+    Html.Styled.form [ onSubmit SaveNote ]
+        [ input [ value note.title, onInput UpdateTitle ] []
+        , input [ value note.description, onInput UpdateDescription ] []
+        , button [ onClick SaveNote ] [ text "Save" ]
+        ]
+
+
+showNote : Note -> Html Msg
 showNote note =
     li [] [ text note.title ]

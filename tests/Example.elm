@@ -19,7 +19,7 @@ emptyModel =
                     EditNote
              in
              [ test "Then we have state for entry"
-                (\_ -> Expect.equal (update action model) { model | newNote = Just initNote })
+                (\_ -> Expect.equal { model | newNote = Just initNote } (update action model))
              ]
             )
          ]
@@ -49,6 +49,24 @@ editNotePage =
                     Expect.equal
                         [ { title = "Title", description = "Description" } ]
                         (update action model).notes
+                )
+             ]
+            )
+         , describe "When the title is updated"
+            (let
+                action =
+                    UpdateTitle "Title2"
+             in
+             [ test "Then the title should be updated"
+                (\_ ->
+                    Expect.equal "Title2"
+                        (case (update action model).newNote of
+                            Just note ->
+                                note.title
+
+                            Nothing ->
+                                "Wrong"
+                        )
                 )
              ]
             )
