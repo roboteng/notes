@@ -122,4 +122,7 @@ newNoteForm note =
 
 showNote : Note -> Html Msg
 showNote note =
-    li [] [ text note.title ]
+    li []
+        [ p [] [ text note.title ]
+        , p [] [ text note.description ]
+        ]

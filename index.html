@@ -6366,13 +6366,27 @@ var $author$project$Main$newNoteForm = function (note) {
 			]));
 };
 var $rtfeldman$elm_css$Html$Styled$li = $rtfeldman$elm_css$Html$Styled$node('li');
+var $rtfeldman$elm_css$Html$Styled$p = $rtfeldman$elm_css$Html$Styled$node('p');
 var $author$project$Main$showNote = function (note) {
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$li,
 		_List_Nil,
 		_List_fromArray(
 			[
-				$rtfeldman$elm_css$Html$Styled$text(note.title)
+				A2(
+				$rtfeldman$elm_css$Html$Styled$p,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$text(note.title)
+					])),
+				A2(
+				$rtfeldman$elm_css$Html$Styled$p,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$text(note.description)
+					]))
 			]));
 };
 var $rtfeldman$elm_css$Html$Styled$ul = $rtfeldman$elm_css$Html$Styled$node('ul');
