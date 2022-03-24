@@ -9,10 +9,11 @@ import Html.Styled.Events exposing (..)
 
 main : Program () Model Msg
 main =
-    Browser.sandbox
+    Browser.element
         { init = init
         , update = update
         , view = view >> toUnstyled
+        , subscriptions = subscriptions
         }
 
 
@@ -35,9 +36,9 @@ type Msg
     | UpdateDescription String
 
 
-init : Model
-init =
-    Model Nothing []
+init : a -> ( Model, Cmd Msg )
+init _ =
+    ( Model Nothing [], Cmd.none )
 
 
 initNote : Note
@@ -45,44 +46,57 @@ initNote =
     Note "" ""
 
 
-update : Msg -> Model -> Model
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Sub.none
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         EditNote ->
-            { model
+            ( { model
                 | newNote = Just initNote
-            }
+              }
+            , Cmd.none
+            )
 
         SaveNote ->
             case model.newNote of
                 Nothing ->
-                    model
+                    ( model, Cmd.none )
 
                 Just note ->
-                    { model
+                    ( { model
                         | newNote = Nothing
                         , notes = model.notes ++ [ note ]
-                    }
+                      }
+                    , Cmd.none
+                    )
 
         UpdateTitle title ->
             case model.newNote of
                 Nothing ->
-                    model
+                    ( model, Cmd.none )
 
                 Just note ->
-                    { model
+                    ( { model
                         | newNote = Just { note | title = title }
-                    }
+                      }
+                    , Cmd.none
+                    )
 
         UpdateDescription desc ->
             case model.newNote of
                 Nothing ->
-                    model
+                    ( model, Cmd.none )
 
                 Just note ->
-                    { model
+                    ( { model
                         | newNote = Just { note | description = desc }
-                    }
+                      }
+                    , Cmd.none
+                    )
 
 
 
