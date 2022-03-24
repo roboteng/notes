@@ -37,14 +37,12 @@ type Msg
 
 init : Model
 init =
-    { newNote = Nothing
-    , notes = []
-    }
+    Model Nothing []
 
 
 initNote : Note
 initNote =
-    { title = "", description = "" }
+    Note "" ""
 
 
 update : Msg -> Model -> Model
@@ -114,9 +112,17 @@ view model =
 newNoteForm : Note -> Html Msg
 newNoteForm note =
     Html.Styled.form [ onSubmit SaveNote ]
-        [ input [ value note.title, onInput UpdateTitle ] []
-        , input [ value note.description, onInput UpdateDescription ] []
+        [ formInput "Title" note.title UpdateTitle
+        , formInput "Description" note.description UpdateDescription
         , button [ onClick SaveNote ] [ text "Save" ]
+        ]
+
+
+formInput : String -> String -> (String -> Msg) -> Html Msg
+formInput l v action =
+    label []
+        [ text l
+        , input [ value v, onInput action ] []
         ]
 
 
