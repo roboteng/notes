@@ -1,10 +1,11 @@
 module Main exposing (..)
 
-import Browser
+import Browser exposing (UrlRequest)
 import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
+import Url
 
 
 main : Program () Model Msg
@@ -54,10 +55,12 @@ subscriptions _ =
     Sub.none
 
 
+onUrlChange : Url.Url -> Msg
 onUrlChange _ =
     None
 
 
+onUrlRequest : UrlRequest -> Msg
 onUrlRequest _ =
     None
 
