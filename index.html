@@ -4406,11 +4406,6 @@ var _Bitwise_shiftRightZfBy = F2(function(offset, a)
 {
 	return a >>> offset;
 });
-var $elm$core$Basics$composeR = F3(
-	function (f, g, x) {
-		return g(
-			f(x));
-	});
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
@@ -5199,7 +5194,7 @@ var $elm$core$Task$perform = F2(
 			$elm$core$Task$Perform(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
-var $elm$browser$Browser$element = _Browser_element;
+var $elm$browser$Browser$document = _Browser_document;
 var $author$project$Main$Model = F2(
 	function (newNote, notes) {
 		return {newNote: newNote, notes: notes};
@@ -5215,6 +5210,333 @@ var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Main$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$none;
+};
+var $author$project$Main$Note = F2(
+	function (title, description) {
+		return {description: description, title: title};
+	});
+var $author$project$Main$initNote = A2($author$project$Main$Note, '', '');
+var $author$project$Main$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'EditNote':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							newNote: $elm$core$Maybe$Just($author$project$Main$initNote)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'SaveNote':
+				var _v1 = model.newNote;
+				if (_v1.$ === 'Nothing') {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				} else {
+					var note = _v1.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								newNote: $elm$core$Maybe$Nothing,
+								notes: _Utils_ap(
+									model.notes,
+									_List_fromArray(
+										[note]))
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
+			case 'UpdateTitle':
+				var title = msg.a;
+				var _v2 = model.newNote;
+				if (_v2.$ === 'Nothing') {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				} else {
+					var note = _v2.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								newNote: $elm$core$Maybe$Just(
+									_Utils_update(
+										note,
+										{title: title}))
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
+			default:
+				var desc = msg.a;
+				var _v3 = model.newNote;
+				if (_v3.$ === 'Nothing') {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				} else {
+					var note = _v3.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								newNote: $elm$core$Maybe$Just(
+									_Utils_update(
+										note,
+										{description: desc}))
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
+		}
+	});
+var $author$project$Main$EditNote = {$: 'EditNote'};
+var $rtfeldman$elm_css$VirtualDom$Styled$Node = F3(
+	function (a, b, c) {
+		return {$: 'Node', a: a, b: b, c: c};
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$Node;
+var $rtfeldman$elm_css$Html$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$node;
+var $rtfeldman$elm_css$Html$Styled$button = $rtfeldman$elm_css$Html$Styled$node('button');
+var $rtfeldman$elm_css$Html$Styled$div = $rtfeldman$elm_css$Html$Styled$node('div');
+var $rtfeldman$elm_css$Html$Styled$h1 = $rtfeldman$elm_css$Html$Styled$node('h1');
+var $rtfeldman$elm_css$Html$Styled$main_ = $rtfeldman$elm_css$Html$Styled$node('main');
+var $rtfeldman$elm_css$Html$Styled$nav = $rtfeldman$elm_css$Html$Styled$node('nav');
+var $author$project$Main$SaveNote = {$: 'SaveNote'};
+var $author$project$Main$UpdateDescription = function (a) {
+	return {$: 'UpdateDescription', a: a};
+};
+var $author$project$Main$UpdateTitle = function (a) {
+	return {$: 'UpdateTitle', a: a};
+};
+var $rtfeldman$elm_css$Html$Styled$form = $rtfeldman$elm_css$Html$Styled$node('form');
+var $rtfeldman$elm_css$Html$Styled$input = $rtfeldman$elm_css$Html$Styled$node('input');
+var $rtfeldman$elm_css$Html$Styled$label = $rtfeldman$elm_css$Html$Styled$node('label');
+var $rtfeldman$elm_css$Html$Styled$Events$alwaysStop = function (x) {
+	return _Utils_Tuple2(x, true);
+};
+var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
+	return {$: 'MayStopPropagation', a: a};
+};
+var $rtfeldman$elm_css$VirtualDom$Styled$Attribute = F3(
+	function (a, b, c) {
+		return {$: 'Attribute', a: a, b: b, c: c};
+	});
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $rtfeldman$elm_css$VirtualDom$Styled$on = F2(
+	function (eventName, handler) {
+		return A3(
+			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
+			A2($elm$virtual_dom$VirtualDom$on, eventName, handler),
+			false,
+			'');
+	});
+var $rtfeldman$elm_css$Html$Styled$Events$stopPropagationOn = F2(
+	function (event, decoder) {
+		return A2(
+			$rtfeldman$elm_css$VirtualDom$Styled$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+	});
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$json$Json$Decode$at = F2(
+	function (fields, decoder) {
+		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
+	});
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $rtfeldman$elm_css$Html$Styled$Events$targetValue = A2(
+	$elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'value']),
+	$elm$json$Json$Decode$string);
+var $rtfeldman$elm_css$Html$Styled$Events$onInput = function (tagger) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$Events$stopPropagationOn,
+		'input',
+		A2(
+			$elm$json$Json$Decode$map,
+			$rtfeldman$elm_css$Html$Styled$Events$alwaysStop,
+			A2($elm$json$Json$Decode$map, tagger, $rtfeldman$elm_css$Html$Styled$Events$targetValue)));
+};
+var $rtfeldman$elm_css$VirtualDom$Styled$Unstyled = function (a) {
+	return {$: 'Unstyled', a: a};
+};
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $rtfeldman$elm_css$VirtualDom$Styled$text = function (str) {
+	return $rtfeldman$elm_css$VirtualDom$Styled$Unstyled(
+		$elm$virtual_dom$VirtualDom$text(str));
+};
+var $rtfeldman$elm_css$Html$Styled$text = $rtfeldman$elm_css$VirtualDom$Styled$text;
+var $elm$virtual_dom$VirtualDom$property = F2(
+	function (key, value) {
+		return A2(
+			_VirtualDom_property,
+			_VirtualDom_noInnerHtmlOrFormAction(key),
+			_VirtualDom_noJavaScriptOrHtmlUri(value));
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$property = F2(
+	function (key, value) {
+		return A3(
+			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
+			A2($elm$virtual_dom$VirtualDom$property, key, value),
+			false,
+			'');
+	});
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			$rtfeldman$elm_css$VirtualDom$Styled$property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
+var $rtfeldman$elm_css$Html$Styled$Attributes$value = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('value');
+var $author$project$Main$formInput = F3(
+	function (l, v, action) {
+		return A2(
+			$rtfeldman$elm_css$Html$Styled$label,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$text(l),
+					A2(
+					$rtfeldman$elm_css$Html$Styled$input,
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Html$Styled$Attributes$value(v),
+							$rtfeldman$elm_css$Html$Styled$Events$onInput(action)
+						]),
+					_List_Nil)
+				]));
+	});
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $rtfeldman$elm_css$Html$Styled$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$rtfeldman$elm_css$VirtualDom$Styled$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $rtfeldman$elm_css$Html$Styled$Events$onClick = function (msg) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $rtfeldman$elm_css$Html$Styled$Events$alwaysPreventDefault = function (msg) {
+	return _Utils_Tuple2(msg, true);
+};
+var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
+	return {$: 'MayPreventDefault', a: a};
+};
+var $rtfeldman$elm_css$Html$Styled$Events$preventDefaultOn = F2(
+	function (event, decoder) {
+		return A2(
+			$rtfeldman$elm_css$VirtualDom$Styled$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
+	});
+var $rtfeldman$elm_css$Html$Styled$Events$onSubmit = function (msg) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$Events$preventDefaultOn,
+		'submit',
+		A2(
+			$elm$json$Json$Decode$map,
+			$rtfeldman$elm_css$Html$Styled$Events$alwaysPreventDefault,
+			$elm$json$Json$Decode$succeed(msg)));
+};
+var $author$project$Main$newNoteForm = function (note) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$form,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Events$onSubmit($author$project$Main$SaveNote)
+			]),
+		_List_fromArray(
+			[
+				A3($author$project$Main$formInput, 'Title', note.title, $author$project$Main$UpdateTitle),
+				A3($author$project$Main$formInput, 'Description', note.description, $author$project$Main$UpdateDescription),
+				A2(
+				$rtfeldman$elm_css$Html$Styled$button,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$SaveNote)
+					]),
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$text('Save')
+					]))
+			]));
+};
+var $rtfeldman$elm_css$Html$Styled$li = $rtfeldman$elm_css$Html$Styled$node('li');
+var $rtfeldman$elm_css$Html$Styled$p = $rtfeldman$elm_css$Html$Styled$node('p');
+var $author$project$Main$showNote = function (note) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$li,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$rtfeldman$elm_css$Html$Styled$p,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$text(note.title)
+					])),
+				A2(
+				$rtfeldman$elm_css$Html$Styled$p,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$text(note.description)
+					]))
+			]));
+};
+var $rtfeldman$elm_css$Html$Styled$ul = $rtfeldman$elm_css$Html$Styled$node('ul');
+var $author$project$Main$myBody = function (model) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$rtfeldman$elm_css$Html$Styled$nav,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						$rtfeldman$elm_css$Html$Styled$h1,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$text('Notes')
+							]))
+					])),
+				A2(
+				$rtfeldman$elm_css$Html$Styled$main_,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						$rtfeldman$elm_css$Html$Styled$button,
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$EditNote)
+							]),
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$text('Add New Note')
+							])),
+						function () {
+						var _v0 = model.newNote;
+						if (_v0.$ === 'Just') {
+							var note = _v0.a;
+							return $author$project$Main$newNoteForm(note);
+						} else {
+							return A2($rtfeldman$elm_css$Html$Styled$div, _List_Nil, _List_Nil);
+						}
+					}(),
+						A2(
+						$rtfeldman$elm_css$Html$Styled$ul,
+						_List_Nil,
+						A2($elm$core$List$map, $author$project$Main$showNote, model.notes))
+					]))
+			]));
 };
 var $elm$core$String$cons = _String_cons;
 var $robinheghan$murmur3$Murmur3$HashData = F4(
@@ -5536,14 +5858,6 @@ var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles = F2(
 			return styles;
 		}
 	});
-var $elm$virtual_dom$VirtualDom$property = F2(
-	function (key, value) {
-		return A2(
-			_VirtualDom_property,
-			_VirtualDom_noInnerHtmlOrFormAction(key),
-			_VirtualDom_noJavaScriptOrHtmlUri(value));
-	});
-var $elm$json$Json$Encode$string = _Json_wrap;
 var $rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute = F2(
 	function (styles, _v0) {
 		var val = _v0.a;
@@ -5893,7 +6207,6 @@ var $elm$core$List$singleton = function (value) {
 	return _List_fromArray(
 		[value]);
 };
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$core$Dict$foldl = F3(
 	function (func, acc, dict) {
 		foldl:
@@ -6133,331 +6446,18 @@ var $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled = function (vdom) {
 	}
 };
 var $rtfeldman$elm_css$Html$Styled$toUnstyled = $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled;
-var $author$project$Main$Note = F2(
-	function (title, description) {
-		return {description: description, title: title};
-	});
-var $author$project$Main$initNote = A2($author$project$Main$Note, '', '');
-var $author$project$Main$update = F2(
-	function (msg, model) {
-		switch (msg.$) {
-			case 'EditNote':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							newNote: $elm$core$Maybe$Just($author$project$Main$initNote)
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'SaveNote':
-				var _v1 = model.newNote;
-				if (_v1.$ === 'Nothing') {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				} else {
-					var note = _v1.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								newNote: $elm$core$Maybe$Nothing,
-								notes: _Utils_ap(
-									model.notes,
-									_List_fromArray(
-										[note]))
-							}),
-						$elm$core$Platform$Cmd$none);
-				}
-			case 'UpdateTitle':
-				var title = msg.a;
-				var _v2 = model.newNote;
-				if (_v2.$ === 'Nothing') {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				} else {
-					var note = _v2.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								newNote: $elm$core$Maybe$Just(
-									_Utils_update(
-										note,
-										{title: title}))
-							}),
-						$elm$core$Platform$Cmd$none);
-				}
-			default:
-				var desc = msg.a;
-				var _v3 = model.newNote;
-				if (_v3.$ === 'Nothing') {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				} else {
-					var note = _v3.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								newNote: $elm$core$Maybe$Just(
-									_Utils_update(
-										note,
-										{description: desc}))
-							}),
-						$elm$core$Platform$Cmd$none);
-				}
-		}
-	});
-var $author$project$Main$EditNote = {$: 'EditNote'};
-var $rtfeldman$elm_css$VirtualDom$Styled$Node = F3(
-	function (a, b, c) {
-		return {$: 'Node', a: a, b: b, c: c};
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$Node;
-var $rtfeldman$elm_css$Html$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$node;
-var $rtfeldman$elm_css$Html$Styled$button = $rtfeldman$elm_css$Html$Styled$node('button');
-var $rtfeldman$elm_css$Html$Styled$div = $rtfeldman$elm_css$Html$Styled$node('div');
-var $rtfeldman$elm_css$Html$Styled$h1 = $rtfeldman$elm_css$Html$Styled$node('h1');
-var $rtfeldman$elm_css$Html$Styled$main_ = $rtfeldman$elm_css$Html$Styled$node('main');
-var $rtfeldman$elm_css$Html$Styled$nav = $rtfeldman$elm_css$Html$Styled$node('nav');
-var $author$project$Main$SaveNote = {$: 'SaveNote'};
-var $author$project$Main$UpdateDescription = function (a) {
-	return {$: 'UpdateDescription', a: a};
-};
-var $author$project$Main$UpdateTitle = function (a) {
-	return {$: 'UpdateTitle', a: a};
-};
-var $rtfeldman$elm_css$Html$Styled$form = $rtfeldman$elm_css$Html$Styled$node('form');
-var $rtfeldman$elm_css$Html$Styled$input = $rtfeldman$elm_css$Html$Styled$node('input');
-var $rtfeldman$elm_css$Html$Styled$label = $rtfeldman$elm_css$Html$Styled$node('label');
-var $rtfeldman$elm_css$Html$Styled$Events$alwaysStop = function (x) {
-	return _Utils_Tuple2(x, true);
-};
-var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
-	return {$: 'MayStopPropagation', a: a};
-};
-var $rtfeldman$elm_css$VirtualDom$Styled$Attribute = F3(
-	function (a, b, c) {
-		return {$: 'Attribute', a: a, b: b, c: c};
-	});
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $rtfeldman$elm_css$VirtualDom$Styled$on = F2(
-	function (eventName, handler) {
-		return A3(
-			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
-			A2($elm$virtual_dom$VirtualDom$on, eventName, handler),
-			false,
-			'');
-	});
-var $rtfeldman$elm_css$Html$Styled$Events$stopPropagationOn = F2(
-	function (event, decoder) {
-		return A2(
-			$rtfeldman$elm_css$VirtualDom$Styled$on,
-			event,
-			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
-	});
-var $elm$json$Json$Decode$field = _Json_decodeField;
-var $elm$json$Json$Decode$at = F2(
-	function (fields, decoder) {
-		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
-	});
-var $elm$json$Json$Decode$string = _Json_decodeString;
-var $rtfeldman$elm_css$Html$Styled$Events$targetValue = A2(
-	$elm$json$Json$Decode$at,
-	_List_fromArray(
-		['target', 'value']),
-	$elm$json$Json$Decode$string);
-var $rtfeldman$elm_css$Html$Styled$Events$onInput = function (tagger) {
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$Events$stopPropagationOn,
-		'input',
-		A2(
-			$elm$json$Json$Decode$map,
-			$rtfeldman$elm_css$Html$Styled$Events$alwaysStop,
-			A2($elm$json$Json$Decode$map, tagger, $rtfeldman$elm_css$Html$Styled$Events$targetValue)));
-};
-var $rtfeldman$elm_css$VirtualDom$Styled$Unstyled = function (a) {
-	return {$: 'Unstyled', a: a};
-};
-var $rtfeldman$elm_css$VirtualDom$Styled$text = function (str) {
-	return $rtfeldman$elm_css$VirtualDom$Styled$Unstyled(
-		$elm$virtual_dom$VirtualDom$text(str));
-};
-var $rtfeldman$elm_css$Html$Styled$text = $rtfeldman$elm_css$VirtualDom$Styled$text;
-var $rtfeldman$elm_css$VirtualDom$Styled$property = F2(
-	function (key, value) {
-		return A3(
-			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
-			A2($elm$virtual_dom$VirtualDom$property, key, value),
-			false,
-			'');
-	});
-var $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			$rtfeldman$elm_css$VirtualDom$Styled$property,
-			key,
-			$elm$json$Json$Encode$string(string));
-	});
-var $rtfeldman$elm_css$Html$Styled$Attributes$value = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('value');
-var $author$project$Main$formInput = F3(
-	function (l, v, action) {
-		return A2(
-			$rtfeldman$elm_css$Html$Styled$label,
-			_List_Nil,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$text(l),
-					A2(
-					$rtfeldman$elm_css$Html$Styled$input,
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$Attributes$value(v),
-							$rtfeldman$elm_css$Html$Styled$Events$onInput(action)
-						]),
-					_List_Nil)
-				]));
-	});
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var $rtfeldman$elm_css$Html$Styled$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$rtfeldman$elm_css$VirtualDom$Styled$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var $rtfeldman$elm_css$Html$Styled$Events$onClick = function (msg) {
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $rtfeldman$elm_css$Html$Styled$Events$alwaysPreventDefault = function (msg) {
-	return _Utils_Tuple2(msg, true);
-};
-var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
-	return {$: 'MayPreventDefault', a: a};
-};
-var $rtfeldman$elm_css$Html$Styled$Events$preventDefaultOn = F2(
-	function (event, decoder) {
-		return A2(
-			$rtfeldman$elm_css$VirtualDom$Styled$on,
-			event,
-			$elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
-	});
-var $rtfeldman$elm_css$Html$Styled$Events$onSubmit = function (msg) {
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$Events$preventDefaultOn,
-		'submit',
-		A2(
-			$elm$json$Json$Decode$map,
-			$rtfeldman$elm_css$Html$Styled$Events$alwaysPreventDefault,
-			$elm$json$Json$Decode$succeed(msg)));
-};
-var $author$project$Main$newNoteForm = function (note) {
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$form,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Events$onSubmit($author$project$Main$SaveNote)
-			]),
-		_List_fromArray(
-			[
-				A3($author$project$Main$formInput, 'Title', note.title, $author$project$Main$UpdateTitle),
-				A3($author$project$Main$formInput, 'Description', note.description, $author$project$Main$UpdateDescription),
-				A2(
-				$rtfeldman$elm_css$Html$Styled$button,
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$SaveNote)
-					]),
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Html$Styled$text('Save')
-					]))
-			]));
-};
-var $rtfeldman$elm_css$Html$Styled$li = $rtfeldman$elm_css$Html$Styled$node('li');
-var $rtfeldman$elm_css$Html$Styled$p = $rtfeldman$elm_css$Html$Styled$node('p');
-var $author$project$Main$showNote = function (note) {
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$li,
-		_List_Nil,
-		_List_fromArray(
-			[
-				A2(
-				$rtfeldman$elm_css$Html$Styled$p,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Html$Styled$text(note.title)
-					])),
-				A2(
-				$rtfeldman$elm_css$Html$Styled$p,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Html$Styled$text(note.description)
-					]))
-			]));
-};
-var $rtfeldman$elm_css$Html$Styled$ul = $rtfeldman$elm_css$Html$Styled$node('ul');
 var $author$project$Main$view = function (model) {
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$div,
-		_List_Nil,
-		_List_fromArray(
+	return {
+		body: _List_fromArray(
 			[
-				A2(
-				$rtfeldman$elm_css$Html$Styled$nav,
-				_List_Nil,
-				_List_fromArray(
-					[
-						A2(
-						$rtfeldman$elm_css$Html$Styled$h1,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$rtfeldman$elm_css$Html$Styled$text('Notes')
-							]))
-					])),
-				A2(
-				$rtfeldman$elm_css$Html$Styled$main_,
-				_List_Nil,
-				_List_fromArray(
-					[
-						A2(
-						$rtfeldman$elm_css$Html$Styled$button,
-						_List_fromArray(
-							[
-								$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$EditNote)
-							]),
-						_List_fromArray(
-							[
-								$rtfeldman$elm_css$Html$Styled$text('Add New Note')
-							])),
-						function () {
-						var _v0 = model.newNote;
-						if (_v0.$ === 'Just') {
-							var note = _v0.a;
-							return $author$project$Main$newNoteForm(note);
-						} else {
-							return A2($rtfeldman$elm_css$Html$Styled$div, _List_Nil, _List_Nil);
-						}
-					}(),
-						A2(
-						$rtfeldman$elm_css$Html$Styled$ul,
-						_List_Nil,
-						A2($elm$core$List$map, $author$project$Main$showNote, model.notes))
-					]))
-			]));
+				$rtfeldman$elm_css$Html$Styled$toUnstyled(
+				$author$project$Main$myBody(model))
+			]),
+		title: 'Notes'
+	};
 };
-var $author$project$Main$main = $elm$browser$Browser$element(
-	{
-		init: $author$project$Main$init,
-		subscriptions: $author$project$Main$subscriptions,
-		update: $author$project$Main$update,
-		view: A2($elm$core$Basics$composeR, $author$project$Main$view, $rtfeldman$elm_css$Html$Styled$toUnstyled)
-	});
+var $author$project$Main$main = $elm$browser$Browser$document(
+	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
 

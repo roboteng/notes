@@ -9,8 +9,8 @@ emptyModel : Test
 emptyModel =
     describe "Given an empty model"
         (let
-            model =
-                init
+            ( model, _ ) =
+                init ()
          in
          [ describe
             "WHen the user clicks on the Add Note Button"
@@ -19,7 +19,7 @@ emptyModel =
                     EditNote
              in
              [ test "Then we have state for entry"
-                (\_ -> Expect.equal { model | newNote = Just initNote } (update action model))
+                (\_ -> Expect.equal { model | newNote = Just initNote } (Tuple.first (update action model)))
              ]
             )
          ]
@@ -31,7 +31,7 @@ editNotePage =
     describe "Given the Edit Note page is open"
         (let
             model =
-                { init | newNote = Just { title = "Title", description = "Description" } }
+                Main.Model (Just { title = "Title", description = "Description" }) []
          in
          [ describe "When the user save a note"
             (let
@@ -42,13 +42,13 @@ editNotePage =
                 (\_ ->
                     Expect.equal
                         Nothing
-                        (update action model).newNote
+                        (Tuple.first (update action model)).newNote
                 )
              , test "Then the notes list is populated"
                 (\_ ->
                     Expect.equal
                         [ { title = "Title", description = "Description" } ]
-                        (update action model).notes
+                        (Tuple.first (update action model)).notes
                 )
              ]
             )
@@ -60,7 +60,7 @@ editNotePage =
              [ test "Then the title should be updated"
                 (\_ ->
                     Expect.equal "Title2"
-                        (case (update action model).newNote of
+                        (case (Tuple.first (update action model)).newNote of
                             Just note ->
                                 note.title
 

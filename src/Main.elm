@@ -9,10 +9,10 @@ import Html.Styled.Events exposing (..)
 
 main : Program () Model Msg
 main =
-    Browser.element
+    Browser.document
         { init = init
         , update = update
-        , view = view >> toUnstyled
+        , view = view
         , subscriptions = subscriptions
         }
 
@@ -103,8 +103,15 @@ update msg model =
 -- VIEW
 
 
-view : Model -> Html Msg
+view : Model -> Browser.Document Msg
 view model =
+    { title = "Notes"
+    , body = [ toUnstyled (myBody model) ]
+    }
+
+
+myBody : Model -> Html Msg
+myBody model =
     div
         []
         [ nav []
