@@ -10,7 +10,7 @@ emptyModel =
     describe "Given an empty model"
         (let
             ( model, _ ) =
-                init ()
+                init () () ()
          in
          [ describe
             "WHen the user clicks on the Add Note Button"

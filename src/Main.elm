@@ -9,11 +9,13 @@ import Html.Styled.Events exposing (..)
 
 main : Program () Model Msg
 main =
-    Browser.document
+    Browser.application
         { init = init
         , update = update
         , view = view
         , subscriptions = subscriptions
+        , onUrlChange = onUrlChange
+        , onUrlRequest = onUrlRequest
         }
 
 
@@ -30,14 +32,15 @@ type alias Note =
 
 
 type Msg
-    = EditNote
+    = None
+    | EditNote
     | SaveNote
     | UpdateTitle String
     | UpdateDescription String
 
 
-init : a -> ( Model, Cmd Msg )
-init _ =
+init : () -> a -> b -> ( Model, Cmd Msg )
+init _ _ _ =
     ( Model Nothing [], Cmd.none )
 
 
@@ -51,9 +54,20 @@ subscriptions _ =
     Sub.none
 
 
+onUrlChange _ =
+    None
+
+
+onUrlRequest _ =
+    None
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        None ->
+            ( model, Cmd.none )
+
         EditNote ->
             ( { model
                 | newNote = Just initNote

@@ -5194,17 +5194,25 @@ var $elm$core$Task$perform = F2(
 			$elm$core$Task$Perform(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
-var $elm$browser$Browser$document = _Browser_document;
+var $elm$browser$Browser$application = _Browser_application;
 var $author$project$Main$Model = F2(
 	function (newNote, notes) {
 		return {newNote: newNote, notes: notes};
 	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$Main$init = function (_v0) {
-	return _Utils_Tuple2(
-		A2($author$project$Main$Model, $elm$core$Maybe$Nothing, _List_Nil),
-		$elm$core$Platform$Cmd$none);
+var $author$project$Main$init = F3(
+	function (_v0, _v1, _v2) {
+		return _Utils_Tuple2(
+			A2($author$project$Main$Model, $elm$core$Maybe$Nothing, _List_Nil),
+			$elm$core$Platform$Cmd$none);
+	});
+var $author$project$Main$None = {$: 'None'};
+var $author$project$Main$onUrlChange = function (_v0) {
+	return $author$project$Main$None;
+};
+var $author$project$Main$onUrlRequest = function (_v0) {
+	return $author$project$Main$None;
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
@@ -5219,6 +5227,8 @@ var $author$project$Main$initNote = A2($author$project$Main$Note, '', '');
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
+			case 'None':
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'EditNote':
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -6456,8 +6466,8 @@ var $author$project$Main$view = function (model) {
 		title: 'Notes'
 	};
 };
-var $author$project$Main$main = $elm$browser$Browser$document(
-	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
+var $author$project$Main$main = $elm$browser$Browser$application(
+	{init: $author$project$Main$init, onUrlChange: $author$project$Main$onUrlChange, onUrlRequest: $author$project$Main$onUrlRequest, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
 
