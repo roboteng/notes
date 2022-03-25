@@ -3,8 +3,10 @@ module Main exposing (..)
 import Browser exposing (UrlRequest)
 import Css exposing (..)
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (..)
+import Html.Styled.Attributes exposing (value)
 import Html.Styled.Events exposing (..)
+import Http
+import Json.Decode exposing (Decoder, field, list, map2, string)
 import Url
 
 
@@ -38,11 +40,12 @@ type Msg
     | SaveNote
     | UpdateTitle String
     | UpdateDescription String
+    | GotNotes (Result Http.Error (List Note))
 
 
 init : () -> a -> b -> ( Model, Cmd Msg )
 init _ _ _ =
-    ( Model Nothing [], Cmd.none )
+    ( Model Nothing [], getNotes )
 
 
 initNote : Note
@@ -114,6 +117,38 @@ update msg model =
                       }
                     , Cmd.none
                     )
+
+        GotNotes res ->
+            case res of
+                Ok ns ->
+                    ( { model | notes = ns }, Cmd.none )
+
+                Err _ ->
+                    ( model, Cmd.none )
+
+
+
+-- HTTP
+
+
+getNotes : Cmd Msg
+getNotes =
+    Http.get
+        { url = "/api/notes"
+        , expect = Http.expectJson GotNotes notesDecoder
+        }
+
+
+notesDecoder : Decoder (List Note)
+notesDecoder =
+    list noteDecoder
+
+
+noteDecoder : Decoder Note
+noteDecoder =
+    map2 Note
+        (field "title" string)
+        (field "desc" string)
 
 
 
