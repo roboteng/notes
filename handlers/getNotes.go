@@ -9,9 +9,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func GetNtes() func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func GetNtes(service ty.NotesViewer) func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		notes := []ty.Note{}
+		notes := service.ViewNotes()
 		bytes, _ := json.Marshal(notes)
 		fmt.Fprint(w, string(bytes))
 	}
