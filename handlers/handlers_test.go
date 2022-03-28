@@ -33,33 +33,23 @@ func TestGetNotes(t *testing.T) {
 				r := httptest.NewRequest(http.MethodGet, "/api/notes", nil)
 				router.ServeHTTP(wr, r)
 				res := wr.Result()
-				thens := []struct {
-					desc      string
-					want      []ty.Note
-					transform func(http.Response) []ty.Note
-				}{
-					{
-						desc: "Then they get an empty list",
-						want: make([]ty.Note, 0),
-						transform: func(r http.Response) []ty.Note {
-							b, err := io.ReadAll(res.Body)
-							if err != nil {
-								t.Error(err.Error())
-							}
-							notes := make([]ty.Note, 0)
-							err = json.Unmarshal(b, &notes)
-							if err != nil {
-								t.Error(err.Error())
-							}
-							return notes
-						},
-					},
-				}
-				for _, then := range thens {
-					t.Run(then.desc, func(t *testing.T) {
-						ts.AssertEqualSlice(t, then.want, then.transform(*res))
-					})
-				}
+
+				t.Run("Then they get an empty list", func(t *testing.T) {
+					b, err := io.ReadAll(res.Body)
+					if err != nil {
+						t.Error(err.Error())
+					}
+					notes := make([]ty.Note, 0)
+					err = json.Unmarshal(b, &notes)
+					if err != nil {
+						t.Error(err.Error())
+					}
+					ts.AssertEqualSlice(t, make([]ty.Note, 0), notes)
+				})
+
+				t.Run("Then the status should be 200", func(t *testing.T) {
+					ts.AssertEquals(t, http.StatusOK, res.StatusCode, "status")
+				})
 			})
 		})
 	}
