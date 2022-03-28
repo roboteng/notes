@@ -21,7 +21,7 @@ func TestGetNotes(t *testing.T) {
 		t.Run("When they go to /api/notes/", func(t *testing.T) {
 			res := getResponse(service)
 			t.Run("Then they get an empty list", func(t *testing.T) {
-				notes := parseBody(t, res)
+				notes := parseBody[[]ty.Note](t, res)
 				ts.AssertEqualSlice(t, make([]ty.Note, 0), notes)
 			})
 
@@ -43,7 +43,7 @@ func TestGetNotes(t *testing.T) {
 		t.Run("When they go to /api/notes", func(t *testing.T) {
 			res := getResponse(service)
 			t.Run("Then the response should have that note", func(t *testing.T) {
-				got := parseBody(t, res)
+				got := parseBody[[]ty.Note](t, res)
 				want := []ty.Note{note}
 				ts.AssertEqualSlice(t, want, got)
 			})
@@ -51,17 +51,17 @@ func TestGetNotes(t *testing.T) {
 	})
 }
 
-func parseBody(t *testing.T, res *http.Response) []ty.Note {
+func parseBody[T any](t *testing.T, res *http.Response) T {
 	b, err := io.ReadAll(res.Body)
 	if err != nil {
 		t.Error(err.Error())
 	}
-	notes := make([]ty.Note, 0)
-	err = json.Unmarshal(b, &notes)
+	body := new(T)
+	err = json.Unmarshal(b, body)
 	if err != nil {
 		t.Error(err.Error())
 	}
-	return notes
+	return *body
 }
 
 func getResponse(service *ty.AnonNotesViewer) *http.Response {
