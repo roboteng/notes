@@ -1,12 +1,14 @@
 name: CI/CD Pipeline
 on:
-  push:
-    branches: [ main ]
+  workflow_run:
+    workflows: ["Go", "Node.js CI"]
+    branches: [main]
+    types:
+      - completed
 
 jobs:
   continuous-deployment:
     runs-on: ubuntu-latest
-    needs: [build-elm, build-go]
     if: github.ref == 'refs/heads/main'
     steps:
      # Step 1
