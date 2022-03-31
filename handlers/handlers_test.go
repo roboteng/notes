@@ -24,8 +24,8 @@ func TestGetNotes(t *testing.T) {
 		t.Run("When they go to /api/notes/", func(t *testing.T) {
 			res := getResponse(service)
 			t.Run("Then they get an empty list", func(t *testing.T) {
-				notes := parseBody[[]ty.Note](t, res)
-				ts.AssertEqualSlice(t, make([]ty.Note, 0), notes)
+				notes := parse[[]ty.Note](res)
+				ts.AssertEqualSlice(t, make([]ty.Note, 0), *notes)
 			})
 
 			t.Run("Then the status should be 200", func(t *testing.T) {
@@ -46,9 +46,9 @@ func TestGetNotes(t *testing.T) {
 		t.Run("When they go to /api/notes", func(t *testing.T) {
 			res := getResponse(service)
 			t.Run("Then the response should have that note", func(t *testing.T) {
-				got := parseBody[[]ty.Note](t, res)
+				got := parse[[]ty.Note](res)
 				want := []ty.Note{note}
-				ts.AssertEqualSlice(t, want, got)
+				ts.AssertEqualSlice(t, want, *got)
 			})
 		})
 	})
@@ -86,32 +86,29 @@ func TestCreateNote(t *testing.T) {
 			ts.AssertEquals(t, http.StatusCreated, res.StatusCode, "Status Code")
 		})
 		t.Run("Then the body should be the new id", func(t *testing.T) {
-			var got struct {
+
+			got := parse[struct {
 				Id int `json:"id"`
-			}
-			bs, err := io.ReadAll(res.Body)
-			if err != nil {
-				panic(err)
-			}
-			json.Unmarshal(bs, &got)
+			}](res)
+
 			ts.AssertEquals(t, struct {
 				Id int `json:"id"`
-			}{1}, got, "body")
+			}{1}, *got, "body")
 		})
 	})
 }
 
-func parseBody[T any](t *testing.T, res *http.Response) T {
+func parse[T any](res *http.Response) *T {
 	b, err := io.ReadAll(res.Body)
 	if err != nil {
-		t.Error(err.Error())
+		panic(err)
 	}
 	body := new(T)
 	err = json.Unmarshal(b, body)
 	if err != nil {
-		t.Error(err.Error())
+		panic(err)
 	}
-	return *body
+	return body
 }
 
 func getResponse(service *ty.AnonNotesViewer) *http.Response {
