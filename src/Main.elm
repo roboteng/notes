@@ -40,7 +40,7 @@ type Msg
     | UpdateTitle String
     | UpdateDescription String
     | GotNotes (Result Http.Error (List Note))
-    | PostedNote (Result Http.Error { id : Int })
+    | PostedNote (Result Http.Error PostNoteResponse)
 
 
 init : () -> a -> b -> ( Model, Cmd Msg )
@@ -143,7 +143,7 @@ postNote : Note -> Cmd Msg
 postNote note =
     Http.post
         { url = "/api/notes?title=" ++ note.title
-        , body = Http.stringBody "" ""
+        , body = Http.stringBody "text/plain" note.description
         , expect = Http.expectJson PostedNote idDecoder
         }
 

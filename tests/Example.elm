@@ -1,7 +1,8 @@
 module Example exposing (..)
 
 import Expect
-import Main exposing (Msg(..), init, initNote, update)
+import Json.Decode exposing (decodeString)
+import Main exposing (Msg(..), Note, init, initNote, noteDecoder, update)
 import Test exposing (Test, describe, test)
 
 
@@ -72,3 +73,8 @@ editNotePage =
             )
          ]
         )
+
+
+parseJsonNote : Test
+parseJsonNote =
+    test "json should be parse" (\_ -> Expect.equal (Ok (Note "My Title" "My Desc")) (decodeString noteDecoder """{"title":"My Title","desc":"My Desc","id":1}"""))

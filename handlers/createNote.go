@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	ty "notes/types"
 
@@ -12,7 +13,11 @@ func CreateNote(service ty.NoteCreator) func(w http.ResponseWriter, r *http.Requ
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		title := r.URL.Query().Get("title")
 		if title != "" {
-			id, err := service.CreateNote(ty.Note{Title: title})
+			contents, err := io.ReadAll(r.Body)
+			if err != nil {
+				panic(err)
+			}
+			id, err := service.CreateNote(ty.Note{Title: title, Contents: string(contents)})
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				return

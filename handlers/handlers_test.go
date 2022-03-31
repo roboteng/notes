@@ -11,6 +11,7 @@ import (
 	"notes/services"
 	ts "notes/testHelpers"
 	ty "notes/types"
+	"strings"
 	"testing"
 
 	"github.com/julienschmidt/httprouter"
@@ -71,11 +72,11 @@ func TestCreateNote(t *testing.T) {
 			ts.AssertEquals(t, http.StatusBadRequest, res.StatusCode, "Status Code")
 		})
 	})
-	t.Run("When a request comes in with title in the query", func(t *testing.T) {
+	t.Run("When a request comes in with title in the query, and desc in the body", func(t *testing.T) {
 		keys := url.Values{}
 		keys.Add("title", "my title")
 		query := keys.Encode()
-		req := httptest.NewRequest("POST", "/api/notes?"+query, nil)
+		req := httptest.NewRequest("POST", "/api/notes?"+query, strings.NewReader("my desc"))
 		r := httptest.NewRecorder()
 		service := &services.InMemoryNoteService{}
 		handler := handlers.CreateNote(service)
@@ -90,6 +91,7 @@ func TestCreateNote(t *testing.T) {
 		})
 		t.Run("Then the service should have a note added", func(t *testing.T) {
 			ts.AssertEquals(t, "my title", service.ViewNotes()[0].Title, "Note Title")
+			ts.AssertEquals(t, "my desc", service.ViewNotes()[0].Contents, "Note Title")
 		})
 	})
 	t.Run("When two create note requests come in, they should have the correct ids", func(t *testing.T) {
