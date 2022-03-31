@@ -13,7 +13,7 @@ func MakeRouter(service ty.NoteService) *httprouter.Router {
 		http.ServeFile(w, r, "index.html")
 	})
 	router.GET("/api/notes", GetNtes(service))
-	router.POST("api/notes", CreateNote(service))
+	router.POST("/api/notes", CreateNote(service))
 
 	return router
 }

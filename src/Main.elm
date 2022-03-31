@@ -1,12 +1,11 @@
 module Main exposing (..)
 
 import Browser exposing (UrlRequest)
-import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (value)
 import Html.Styled.Events exposing (..)
 import Http
-import Json.Decode exposing (Decoder, field, list, map2, string)
+import Json.Decode exposing (Decoder, field, int, list, map2, string)
 import Url
 
 
@@ -41,6 +40,7 @@ type Msg
     | UpdateTitle String
     | UpdateDescription String
     | GotNotes (Result Http.Error (List Note))
+    | PostedNote (Result Http.Error { id : Int })
 
 
 init : () -> a -> b -> ( Model, Cmd Msg )
@@ -91,7 +91,7 @@ update msg model =
                         | newNote = Nothing
                         , notes = model.notes ++ [ note ]
                       }
-                    , Cmd.none
+                    , postNote note
                     )
 
         UpdateTitle title ->
@@ -126,9 +126,37 @@ update msg model =
                 Err _ ->
                     ( model, Cmd.none )
 
+        PostedNote res ->
+            case res of
+                Ok _ ->
+                    ( model, getNotes )
+
+                Err _ ->
+                    ( model, Cmd.none )
+
 
 
 -- HTTP
+
+
+postNote : Note -> Cmd Msg
+postNote note =
+    Http.post
+        { url = "/api/notes?title=" ++ note.title
+        , body = Http.stringBody "" ""
+        , expect = Http.expectJson PostedNote idDecoder
+        }
+
+
+type alias PostNoteResponse =
+    { id : Int }
+
+
+idDecoder : Decoder PostNoteResponse
+idDecoder =
+    Json.Decode.map
+        PostNoteResponse
+        (field "id" int)
 
 
 getNotes : Cmd Msg

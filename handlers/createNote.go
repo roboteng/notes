@@ -12,7 +12,7 @@ func CreateNote(service ty.NoteCreator) func(w http.ResponseWriter, r *http.Requ
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		title := r.URL.Query().Get("title")
 		if title != "" {
-			id, err := service.CreateNote(ty.Note{})
+			id, err := service.CreateNote(ty.Note{Title: title})
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				return

@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"notes/handlers"
+	"notes/services"
 	ts "notes/testHelpers"
 	ty "notes/types"
 	"testing"
@@ -76,21 +77,19 @@ func TestCreateNote(t *testing.T) {
 		query := keys.Encode()
 		req := httptest.NewRequest("POST", "/api/notes?"+query, nil)
 		r := httptest.NewRecorder()
-		handler := handlers.CreateNote(&ty.AnonNoteCreator{
-			Create: func(note ty.Note) (int, error) {
-				return 1, nil
-			},
-		})
+		service := &services.InMemoryNoteService{}
+		handler := handlers.CreateNote(service)
 		handler(r, req, httprouter.Params{})
 		res := r.Result()
 		t.Run("Then the response is 201 - Created", func(t *testing.T) {
 			ts.AssertEquals(t, http.StatusCreated, res.StatusCode, "Status Code")
 		})
 		t.Run("Then the body should be the new id", func(t *testing.T) {
-
 			got := parse[ty.CreateNoteResponse](res)
-
 			ts.AssertEquals(t, ty.CreateNoteResponse{Id: 1}, *got, "body")
+		})
+		t.Run("Then the service should have a note added", func(t *testing.T) {
+			ts.AssertEquals(t, "my title", service.ViewNotes()[0].Title, "Note Title")
 		})
 	})
 	t.Run("When two create note requests come in, they should have the correct ids", func(t *testing.T) {
