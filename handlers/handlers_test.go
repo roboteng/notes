@@ -2,6 +2,7 @@ package handlers_test
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -87,13 +88,9 @@ func TestCreateNote(t *testing.T) {
 		})
 		t.Run("Then the body should be the new id", func(t *testing.T) {
 
-			got := parse[struct {
-				Id int `json:"id"`
-			}](res)
+			got := parse[ty.CreateNoteResponse](res)
 
-			ts.AssertEquals(t, struct {
-				Id int `json:"id"`
-			}{1}, *got, "body")
+			ts.AssertEquals(t, ty.CreateNoteResponse{Id: 1}, *got, "body")
 		})
 	})
 	t.Run("When two create note requests come in, they should have the correct ids", func(t *testing.T) {
@@ -107,13 +104,26 @@ func TestCreateNote(t *testing.T) {
 		handler(r, req, httprouter.Params{})
 		res := r.Result()
 		t.Run("The second response should have an id of 2", func(t *testing.T) {
-			got := parse[struct {
-				Id int `json:"id"`
-			}](res)
+			got := parse[ty.CreateNoteResponse](res)
 
-			ts.AssertEquals(t, struct {
-				Id int `json:"id"`
-			}{2}, *got, "body")
+			ts.AssertEquals(t, ty.CreateNoteResponse{Id: 2}, *got, "body")
+		})
+	})
+	t.Run("When a valid reponse comes in, and when the service gives an error", func(t *testing.T) {
+		keys := url.Values{}
+		keys.Add("title", "my title")
+		query := keys.Encode()
+		req := httptest.NewRequest("POST", "/api/notes?"+query, nil)
+		r := httptest.NewRecorder()
+		service := &ty.AnonNoteCreator{
+			Create: func(note ty.Note) (int, error) {
+				return 0, errors.New("It Failed!")
+			},
+		}
+		handlers.CreateNote(service)(r, req, httprouter.Params{})
+		res := r.Result()
+		t.Run("Then the response should have a 500 status code", func(t *testing.T) {
+			ts.AssertEquals(t, http.StatusInternalServerError, res.StatusCode, "Status Code")
 		})
 	})
 }

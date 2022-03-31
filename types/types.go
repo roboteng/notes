@@ -39,3 +39,7 @@ type AnonNoteCreator struct {
 func (a *AnonNoteCreator) CreateNote(note Note) (int, error) {
 	return a.Create(note)
 }
+
+type CreateNoteResponse struct {
+	Id int `json:"id"`
+}
