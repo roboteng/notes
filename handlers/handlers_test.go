@@ -96,6 +96,35 @@ func TestCreateNote(t *testing.T) {
 			}{1}, *got, "body")
 		})
 	})
+	t.Run("When two create note requests come in, they should have the correct ids", func(t *testing.T) {
+		keys := url.Values{}
+		keys.Add("title", "my title")
+		query := keys.Encode()
+		req := httptest.NewRequest("POST", "/api/notes?"+query, nil)
+		r := httptest.NewRecorder()
+		handler := handlers.CreateNote(&inMemoryNoteCreator{})
+		handler(httptest.NewRecorder(), httptest.NewRequest("POST", "/api/notes?"+query, nil), httprouter.Params{})
+		handler(r, req, httprouter.Params{})
+		res := r.Result()
+		t.Run("The second response should have an id of 2", func(t *testing.T) {
+			got := parse[struct {
+				Id int `json:"id"`
+			}](res)
+
+			ts.AssertEquals(t, struct {
+				Id int `json:"id"`
+			}{2}, *got, "body")
+		})
+	})
+}
+
+type inMemoryNoteCreator struct {
+	notes int
+}
+
+func (i *inMemoryNoteCreator) CreateNote(note ty.Note) (int, error) {
+	i.notes++
+	return i.notes, nil
 }
 
 func parse[T any](res *http.Response) *T {

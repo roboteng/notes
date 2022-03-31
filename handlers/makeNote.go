@@ -12,8 +12,9 @@ func CreateNote(service ty.NoteCreator) func(w http.ResponseWriter, r *http.Requ
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		title := r.URL.Query().Get("title")
 		if title != "" {
+			id, _ := service.CreateNote(ty.Note{})
 			w.WriteHeader(http.StatusCreated)
-			fmt.Fprint(w, "{\"id\":1}")
+			fmt.Fprintf(w, "{\"id\":%d}", id)
 			return
 		}
 		w.WriteHeader(http.StatusBadRequest)
