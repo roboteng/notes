@@ -8,9 +8,15 @@ import (
 )
 
 func main() {
-	service := &types.AnonNotesViewer{
-		View: func() []types.Note {
-			return make([]types.Note, 0)
+	service := &types.AnonNoteService{
+		AnonNoteCreator: types.AnonNoteCreator{
+			Create: func(note types.Note) (int, error) {
+				panic("Not Implemented")
+			}},
+		AnonNotesViewer: types.AnonNotesViewer{
+			View: func() []types.Note {
+				return make([]types.Note, 0)
+			},
 		},
 	}
 	router := handlers.MakeRouter(service)

@@ -5,10 +5,13 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"notes/handlers"
 	ts "notes/testHelpers"
 	ty "notes/types"
 	"testing"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 func TestGetNotes(t *testing.T) {
@@ -51,6 +54,53 @@ func TestGetNotes(t *testing.T) {
 	})
 }
 
+func TestCreateNote(t *testing.T) {
+	t.Run("When an empty request comes in", func(t *testing.T) {
+		req := httptest.NewRequest("POST", "/api/notes", nil)
+		r := httptest.NewRecorder()
+		handler := handlers.CreateNote(&ty.AnonNoteCreator{
+			Create: func(note ty.Note) (int, error) {
+				panic("This should not be reached")
+			},
+		})
+		handler(r, req, httprouter.Params{})
+		res := r.Result()
+		t.Run("Then the response code is 400", func(t *testing.T) {
+			ts.AssertEquals(t, http.StatusBadRequest, res.StatusCode, "Status Code")
+		})
+	})
+	t.Run("When a request comes in with title in the query", func(t *testing.T) {
+		keys := url.Values{}
+		keys.Add("title", "my title")
+		query := keys.Encode()
+		req := httptest.NewRequest("POST", "/api/notes?"+query, nil)
+		r := httptest.NewRecorder()
+		handler := handlers.CreateNote(&ty.AnonNoteCreator{
+			Create: func(note ty.Note) (int, error) {
+				return 1, nil
+			},
+		})
+		handler(r, req, httprouter.Params{})
+		res := r.Result()
+		t.Run("Then the response is 201 - Created", func(t *testing.T) {
+			ts.AssertEquals(t, http.StatusCreated, res.StatusCode, "Status Code")
+		})
+		t.Run("Then the body should be the new id", func(t *testing.T) {
+			var got struct {
+				Id int `json:"id"`
+			}
+			bs, err := io.ReadAll(res.Body)
+			if err != nil {
+				panic(err)
+			}
+			json.Unmarshal(bs, &got)
+			ts.AssertEquals(t, struct {
+				Id int `json:"id"`
+			}{1}, got, "body")
+		})
+	})
+}
+
 func parseBody[T any](t *testing.T, res *http.Response) T {
 	b, err := io.ReadAll(res.Body)
 	if err != nil {
@@ -65,10 +115,9 @@ func parseBody[T any](t *testing.T, res *http.Response) T {
 }
 
 func getResponse(service *ty.AnonNotesViewer) *http.Response {
-	router := handlers.MakeRouter(service)
 	wr := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/api/notes", nil)
-	router.ServeHTTP(wr, r)
+	handlers.GetNtes(service)(wr, r, httprouter.Params{})
 	res := wr.Result()
 	return res
 }
