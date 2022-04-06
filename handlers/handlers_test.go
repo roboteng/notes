@@ -172,6 +172,20 @@ func TestViewSingleNote(t *testing.T) {
 				ts.AssertEquals(t, note, got, "Note")
 			})
 		})
+		t.Run("When a request comes in for a different ID", func(t *testing.T) {
+			r := httptest.NewRequest(http.MethodGet, "/api/notes/2", nil)
+			w := httptest.NewRecorder()
+			handler(w, r, httprouter.Params{
+				httprouter.Param{
+					Key:   "id",
+					Value: "2",
+				},
+			})
+			res := w.Result()
+			t.Run("Then the status should be 404", func(t *testing.T) {
+				ts.AssertEquals(t, http.StatusNotFound, res.StatusCode, "Status Code")
+			})
+		})
 	})
 }
 
