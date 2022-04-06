@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -125,6 +126,51 @@ func TestCreateNote(t *testing.T) {
 		res := r.Result()
 		t.Run("Then the response should have a 500 status code", func(t *testing.T) {
 			ts.AssertEquals(t, http.StatusInternalServerError, res.StatusCode, "Status Code")
+		})
+	})
+}
+
+func TestViewSingleNote(t *testing.T) {
+	t.Run("Given a service that has one note", func(t *testing.T) {
+		note := ty.Note{
+			Title:    "My Title",
+			Contents: "My Contents",
+			Id:       1,
+		}
+		service := &ty.AnonSingleNoteViewer{
+			View: func(id int) (ty.Note, error) {
+				if id == 1 {
+					return note, nil
+				}
+				return ty.Note{}, errors.New("No note found at that ID")
+			},
+		}
+		handler := handlers.GetSingleNote(service)
+		t.Run("When a request comes in for id 1", func(t *testing.T) {
+			r := httptest.NewRequest(http.MethodGet, "/api/notes/1", nil)
+			w := httptest.NewRecorder()
+			handler(w, r, httprouter.Params{
+				httprouter.Param{
+					Key:   "id",
+					Value: "1",
+				},
+			})
+			res := w.Result()
+			t.Run("then the status code should be 200", func(t *testing.T) {
+				ts.AssertEquals(t, http.StatusOK, res.StatusCode, "Status Code")
+			})
+			t.Run("Then the body should contain the json for the note", func(t *testing.T) {
+				body, err := ioutil.ReadAll(res.Body)
+				if err != nil {
+					panic(err)
+				}
+				got := ty.Note{}
+				err = json.Unmarshal(body, &got)
+				if err != nil {
+					panic(err)
+				}
+				ts.AssertEquals(t, note, got, "Note")
+			})
 		})
 	})
 }
