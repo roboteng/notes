@@ -5,7 +5,7 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (value)
 import Html.Styled.Events exposing (..)
 import Http
-import Json.Decode exposing (Decoder, field, int, list, map2, string)
+import Json.Decode exposing (Decoder, field, int, list, map3, string)
 import Url
 
 
@@ -24,12 +24,14 @@ main =
 type alias Model =
     { newNote : Maybe Note
     , notes : List Note
+    , note : Maybe Note
     }
 
 
 type alias Note =
     { title : String
     , description : String
+    , id : Int
     }
 
 
@@ -40,17 +42,19 @@ type Msg
     | UpdateTitle String
     | UpdateDescription String
     | GotNotes (Result Http.Error (List Note))
+    | GotNote (Result Http.Error Note)
     | PostedNote (Result Http.Error PostNoteResponse)
+    | ShowNote Int
 
 
 init : () -> a -> b -> ( Model, Cmd Msg )
 init _ _ _ =
-    ( Model Nothing [], getNotes )
+    ( Model Nothing [] Nothing, getNotes )
 
 
 initNote : Note
 initNote =
-    Note "" ""
+    Note "" "" 0
 
 
 subscriptions : Model -> Sub Msg
@@ -126,6 +130,18 @@ update msg model =
                 Err _ ->
                     ( model, Cmd.none )
 
+        GotNote res ->
+            case res of
+                Ok n ->
+                    ( { model
+                        | note = Just n
+                      }
+                    , Cmd.none
+                    )
+
+                Err _ ->
+                    ( model, Cmd.none )
+
         PostedNote res ->
             case res of
                 Ok _ ->
@@ -133,6 +149,9 @@ update msg model =
 
                 Err _ ->
                     ( model, Cmd.none )
+
+        ShowNote id ->
+            ( model, getNote id )
 
 
 
@@ -167,6 +186,14 @@ getNotes =
         }
 
 
+getNote : Int -> Cmd Msg
+getNote id =
+    Http.get
+        { url = "/api/notes/" ++ String.fromInt id
+        , expect = Http.expectJson GotNote noteDecoder
+        }
+
+
 notesDecoder : Decoder (List Note)
 notesDecoder =
     list noteDecoder
@@ -174,9 +201,10 @@ notesDecoder =
 
 noteDecoder : Decoder Note
 noteDecoder =
-    map2 Note
+    map3 Note
         (field "title" string)
         (field "desc" string)
+        (field "id" int)
 
 
 
@@ -186,7 +214,19 @@ noteDecoder =
 view : Model -> Browser.Document Msg
 view model =
     { title = "Notes"
-    , body = [ toUnstyled (myBody model) ]
+    , body =
+        [ toUnstyled
+            (case model.note of
+                Nothing ->
+                    myBody model
+
+                Just n ->
+                    div []
+                        [ p [] [ text n.title ]
+                        , p [] [ text n.description ]
+                        ]
+            )
+        ]
     }
 
 
@@ -232,4 +272,5 @@ showNote note =
     li []
         [ p [] [ text note.title ]
         , p [] [ text note.description ]
+        , button [ onClick (ShowNote note.id) ] [ text "View" ]
         ]

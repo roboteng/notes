@@ -32,7 +32,7 @@ editNotePage =
     describe "Given the Edit Note page is open"
         (let
             model =
-                Main.Model (Just { title = "Title", description = "Description" }) []
+                Main.Model (Just { title = "Title", description = "Description", id = 1 }) [] Nothing
          in
          [ describe "When the user save a note"
             (let
@@ -48,7 +48,7 @@ editNotePage =
              , test "Then the notes list is populated"
                 (\_ ->
                     Expect.equal
-                        [ { title = "Title", description = "Description" } ]
+                        [ { title = "Title", description = "Description", id = 1 } ]
                         (Tuple.first (update action model)).notes
                 )
              ]
@@ -77,4 +77,4 @@ editNotePage =
 
 parseJsonNote : Test
 parseJsonNote =
-    test "json should be parse" (\_ -> Expect.equal (Ok (Note "My Title" "My Desc")) (decodeString noteDecoder """{"title":"My Title","desc":"My Desc","id":1}"""))
+    test "json should be parse" (\_ -> Expect.equal (Ok (Note "My Title" "My Desc" 1)) (decodeString noteDecoder """{"title":"My Title","desc":"My Desc","id":1}"""))

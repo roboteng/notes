@@ -14,6 +14,7 @@ func MakeRouter(service ty.NoteService) *httprouter.Router {
 	})
 	router.GET("/api/notes", GetNtes(service))
 	router.POST("/api/notes", CreateNote(service))
+	router.GET("/api/notes/:id", GetSingleNote(service))
 
 	return router
 }
