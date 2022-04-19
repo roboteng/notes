@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Browser exposing (UrlRequest)
+import Browser.Navigation as Nav
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (value)
 import Html.Styled.Events exposing (..)
@@ -22,10 +23,15 @@ main =
 
 
 type alias Model =
-    { newNote : Maybe Note
+    { page : Page
     , notes : List Note
-    , note : Maybe Note
     }
+
+
+type Page
+    = HomePage
+    | EditNotePage Note
+    | ViewNotePage Int (Maybe Note)
 
 
 type alias Note =
@@ -37,19 +43,19 @@ type alias Note =
 
 type Msg
     = None
-    | EditNote
     | SaveNote
     | UpdateTitle String
     | UpdateDescription String
     | GotNotes (Result Http.Error (List Note))
     | GotNote (Result Http.Error Note)
     | PostedNote (Result Http.Error PostNoteResponse)
-    | ShowNote Int
+    | View Page
+    | UrlChanged Url.Url
 
 
-init : () -> a -> b -> ( Model, Cmd Msg )
+init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ _ _ =
-    ( Model Nothing [] Nothing, getNotes )
+    ( Model HomePage [], getNotes )
 
 
 initNote : Note
@@ -63,8 +69,16 @@ subscriptions _ =
 
 
 onUrlChange : Url.Url -> Msg
-onUrlChange _ =
-    None
+onUrlChange url =
+    case url.path of
+        "/edit" ->
+            View (EditNotePage initNote)
+
+        "/1" ->
+            View (ViewNotePage 1 Nothing)
+
+        _ ->
+            View HomePage
 
 
 onUrlRequest : UrlRequest -> Msg
@@ -78,49 +92,42 @@ update msg model =
         None ->
             ( model, Cmd.none )
 
-        EditNote ->
-            ( { model
-                | newNote = Just initNote
-              }
-            , Cmd.none
-            )
-
         SaveNote ->
-            case model.newNote of
-                Nothing ->
-                    ( model, Cmd.none )
-
-                Just note ->
+            case model.page of
+                EditNotePage note ->
                     ( { model
-                        | newNote = Nothing
+                        | page = HomePage
                         , notes = model.notes ++ [ note ]
                       }
                     , postNote note
                     )
 
-        UpdateTitle title ->
-            case model.newNote of
-                Nothing ->
+                _ ->
                     ( model, Cmd.none )
 
-                Just note ->
+        UpdateTitle title ->
+            case model.page of
+                EditNotePage note ->
                     ( { model
-                        | newNote = Just { note | title = title }
+                        | page = EditNotePage { note | title = title }
                       }
                     , Cmd.none
                     )
+
+                _ ->
+                    ( model, Cmd.none )
 
         UpdateDescription desc ->
-            case model.newNote of
-                Nothing ->
-                    ( model, Cmd.none )
-
-                Just note ->
+            case model.page of
+                EditNotePage note ->
                     ( { model
-                        | newNote = Just { note | description = desc }
+                        | page = EditNotePage { note | description = desc }
                       }
                     , Cmd.none
                     )
+
+                _ ->
+                    ( model, Cmd.none )
 
         GotNotes res ->
             case res of
@@ -134,7 +141,7 @@ update msg model =
             case res of
                 Ok n ->
                     ( { model
-                        | note = Just n
+                        | page = ViewNotePage n.id (Just n)
                       }
                     , Cmd.none
                     )
@@ -150,8 +157,20 @@ update msg model =
                 Err _ ->
                     ( model, Cmd.none )
 
-        ShowNote id ->
-            ( model, getNote id )
+        View page ->
+            ( { model
+                | page = page
+              }
+            , case page of
+                ViewNotePage id _ ->
+                    getNote id
+
+                _ ->
+                    Cmd.none
+            )
+
+        UrlChanged _ ->
+            ( model, Cmd.none )
 
 
 
@@ -216,15 +235,23 @@ view model =
     { title = "Notes"
     , body =
         [ toUnstyled
-            (case model.note of
-                Nothing ->
-                    myBody model
-
-                Just n ->
+            (case model.page of
+                ViewNotePage id n ->
                     div []
-                        [ p [] [ text n.title ]
-                        , p [] [ text n.description ]
-                        ]
+                        (case n of
+                            Just note ->
+                                [ p [] [ text (String.fromInt id) ]
+                                , showNote note
+                                ]
+
+                            Nothing ->
+                                [ p [] [ text (String.fromInt id) ]
+                                , p [] [ text "Loading" ]
+                                ]
+                        )
+
+                _ ->
+                    myBody model
             )
         ]
     }
@@ -238,12 +265,15 @@ myBody model =
             [ h1 [] [ text "Notes" ]
             ]
         , main_ []
-            [ button [ onClick EditNote ] [ text "Add New Note" ]
-            , case model.newNote of
-                Just note ->
+            [ button [ onClick (View (EditNotePage initNote)) ] [ text "Add New Note" ]
+            , case model.page of
+                EditNotePage note ->
                     newNoteForm note
 
-                Nothing ->
+                ViewNotePage id _ ->
+                    p [] [ text (String.fromInt id) ]
+
+                HomePage ->
                     div [] []
             , ul [] (List.map showNote model.notes)
             ]
@@ -272,5 +302,5 @@ showNote note =
     li []
         [ p [] [ text note.title ]
         , p [] [ text note.description ]
-        , button [ onClick (ShowNote note.id) ] [ text "View" ]
+        , button [ onClick (View (ViewNotePage note.id Nothing)) ] [ text "View" ]
         ]
