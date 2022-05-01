@@ -28,6 +28,7 @@ type alias Model =
     , notes : List Note
     , key : Nav.Key
     , url : Url.Url
+    , message : String
     }
 
 
@@ -65,6 +66,7 @@ init _ url key =
               , notes = []
               , key = key
               , url = url
+              , message = ""
               }
             , getNote 1
             )
@@ -74,6 +76,7 @@ init _ url key =
               , notes = []
               , key = key
               , url = url
+              , message = ""
               }
             , getNotes
             )
@@ -133,7 +136,7 @@ update msg model =
                     ( { model | notes = ns }, Cmd.none )
 
                 Err _ ->
-                    ( model, Cmd.none )
+                    ( { model | message = "Couldn't load notes" }, Cmd.none )
 
         GotNote res ->
             case res of
@@ -157,7 +160,7 @@ update msg model =
                     ( model, getNotes )
 
                 Err _ ->
-                    ( model, Cmd.none )
+                    ( { model | message = "Failed to save note" }, Cmd.none )
 
         View page ->
             ( { model
@@ -281,11 +284,23 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Notes"
     , body =
-        [ viewNav
-            model
-            |> toUnstyled
+        [ viewNav model |> toUnstyled
         ]
     }
+
+
+viewNav : Model -> Html Msg
+viewNav model =
+    div
+        []
+        [ nav []
+            [ h1 [] [ text "Notes" ]
+            ]
+        , main_ []
+            [ text model.message
+            , viewPages model
+            ]
+        ]
 
 
 viewPages : Model -> Html Msg
@@ -299,18 +314,6 @@ viewPages model =
 
         HomePage ->
             div [] (viewHomePage model)
-
-
-viewNav : Model -> Html Msg
-viewNav model =
-    div
-        []
-        [ nav []
-            [ h1 [] [ text "Notes" ]
-            ]
-        , main_ []
-            [ viewPages model ]
-        ]
 
 
 viewNoteDetails : Int -> Maybe (Result String Note) -> Html Msg

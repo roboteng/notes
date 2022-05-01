@@ -9,6 +9,12 @@ type InMemoryNoteService struct {
 	notes []types.Note
 }
 
+func NewInMemoryNoteService() *InMemoryNoteService {
+	return &InMemoryNoteService{
+		notes: make([]types.Note, 0),
+	}
+}
+
 func (i *InMemoryNoteService) CreateNote(note types.Note) (int, error) {
 	id := len(i.notes) + 1
 	note.Id = id

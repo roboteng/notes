@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	service := &services.InMemoryNoteService{}
+	service := services.NewInMemoryNoteService()
 	router := handlers.MakeRouter(service)
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
