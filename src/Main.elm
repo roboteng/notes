@@ -33,7 +33,7 @@ type alias Model =
 type Page
     = HomePage
     | EditNotePage Note
-    | ViewNotePage Int (Maybe Note)
+    | ViewNotePage Int (Maybe (Result String Note))
 
 
 type alias Note =
@@ -143,13 +143,17 @@ update msg model =
             case res of
                 Ok n ->
                     ( { model
-                        | page = ViewNotePage n.id (Just n)
+                        | page = ViewNotePage n.id (Just (Ok n))
                       }
                     , Cmd.none
                     )
 
                 Err _ ->
-                    ( model, Cmd.none )
+                    ( { model
+                        | page = ViewNotePage 0 (Just (Err "Something went wrong"))
+                      }
+                    , Cmd.none
+                    )
 
         PostedNote res ->
             case res of
@@ -252,45 +256,65 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Notes"
     , body =
-        [ toUnstyled
-            (case model.page of
-                ViewNotePage id n ->
-                    div []
-                        (case n of
-                            Just note ->
-                                [ p [] [ text (String.fromInt id) ]
-                                , showNote note
-                                ]
-
-                            Nothing ->
-                                [ p [] [ text (String.fromInt id) ]
-                                , p [] [ text "Loading" ]
-                                ]
-                        )
-
-                EditNotePage note ->
-                    newNoteForm note
-
-                HomePage ->
-                    myBody model
-            )
+        [ viewNav
+            model
+            |> toUnstyled
         ]
     }
 
 
-myBody : Model -> Html Msg
-myBody model =
+viewPages : Model -> Html Msg
+viewPages model =
+    case model.page of
+        ViewNotePage id res ->
+            viewNoteDetails id res
+
+        EditNotePage note ->
+            newNoteForm note
+
+        HomePage ->
+            div [] (viewHomePage model)
+
+
+viewNav : Model -> Html Msg
+viewNav model =
     div
         []
         [ nav []
             [ h1 [] [ text "Notes" ]
             ]
         , main_ []
-            [ a [ href "/edit" ] [ text "Add New note" ]
-            , div [] []
-            , ul [] (List.map showNote model.notes)
-            ]
+            [ viewPages model ]
         ]
+
+
+viewNoteDetails : Int -> Maybe (Result String Note) -> Html Msg
+viewNoteDetails id res =
+    div []
+        (case res of
+            Just r ->
+                [ p [] [ text (String.fromInt id) ]
+                , case r of
+                    Ok note ->
+                        showNote note
+
+                    Err message ->
+                        text message
+                ]
+
+            Nothing ->
+                [ p [] [ text (String.fromInt id) ]
+                , p [] [ text "Loading" ]
+                ]
+        )
+
+
+viewHomePage : Model -> List (Html Msg)
+viewHomePage model =
+    [ a [ href "/edit" ] [ text "Add New note" ]
+    , div [] []
+    , ul [] (List.map showNote model.notes)
+    ]
 
 
 newNoteForm : Note -> Html Msg
