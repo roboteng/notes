@@ -148,9 +148,9 @@ update msg model =
                     , Cmd.none
                     )
 
-                Err _ ->
+                Err err ->
                     ( { model
-                        | page = ViewNotePage 0 (Just (Err "Something went wrong"))
+                        | page = handleGotNoteError err
                       }
                     , Cmd.none
                     )
@@ -193,6 +193,22 @@ update msg model =
 
                 Browser.External url ->
                     ( model, Nav.load url )
+
+
+handleGotNoteError : Http.Error -> Page
+handleGotNoteError err =
+    ViewNotePage 0
+        (Just
+            (Err
+                (case err of
+                    Http.BadStatus 404 ->
+                        "Couldn't find the note"
+
+                    _ ->
+                        "Something went wrong"
+                )
+            )
+        )
 
 
 
