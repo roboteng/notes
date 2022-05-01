@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Browser exposing (UrlRequest)
+import Browser
 import Browser.Navigation as Nav
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (href, value)
@@ -17,7 +17,7 @@ main =
         , update = update
         , view = view
         , subscriptions = subscriptions
-        , onUrlChange = onUrlChange
+        , onUrlChange = UrlChanged
         , onUrlRequest = LinkClicked
         }
 
@@ -86,19 +86,6 @@ initNote =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.none
-
-
-onUrlChange : Url.Url -> Msg
-onUrlChange url =
-    case url.path of
-        "/edit" ->
-            EditNotePage initNote |> View
-
-        "/1" ->
-            View (ViewNotePage 1 Nothing)
-
-        _ ->
-            View HomePage
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -187,10 +174,13 @@ update msg model =
         UrlChanged url ->
             case url.path of
                 "/1" ->
-                    ( model, getNote 1 )
+                    ( { model | page = ViewNotePage 1 Nothing }, getNote 1 )
+
+                "/edit" ->
+                    ( { model | page = EditNotePage initNote }, Cmd.none )
 
                 _ ->
-                    ( model, Cmd.none )
+                    ( { model | page = HomePage }, Cmd.none )
 
         LinkClicked req ->
             case req of
@@ -278,7 +268,10 @@ view model =
                                 ]
                         )
 
-                _ ->
+                EditNotePage note ->
+                    newNoteForm note
+
+                HomePage ->
                     myBody model
             )
         ]
@@ -294,15 +287,7 @@ myBody model =
             ]
         , main_ []
             [ a [ href "/edit" ] [ text "Add New note" ]
-            , case model.page of
-                EditNotePage note ->
-                    newNoteForm note
-
-                ViewNotePage id _ ->
-                    p [] [ text (String.fromInt id) ]
-
-                HomePage ->
-                    div [] []
+            , div [] []
             , ul [] (List.map showNote model.notes)
             ]
         ]
