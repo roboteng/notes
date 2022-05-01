@@ -8,6 +8,7 @@ import Html.Styled.Events exposing (..)
 import Http
 import Json.Decode exposing (Decoder, field, int, list, map3, string)
 import Url
+import Url.Builder
 
 
 main : Program () Model Msg
@@ -97,12 +98,7 @@ update msg model =
         SaveNote ->
             case model.page of
                 EditNotePage note ->
-                    ( { model
-                        | page = HomePage
-                        , notes = model.notes ++ [ note ]
-                      }
-                    , postNote note
-                    )
+                    saveNote model note
 
                 _ ->
                     ( model, Cmd.none )
@@ -193,6 +189,19 @@ update msg model =
 
                 Browser.External url ->
                     ( model, Nav.load url )
+
+
+saveNote : Model -> Note -> ( Model, Cmd Msg )
+saveNote model note =
+    ( { model
+        | page = HomePage
+        , notes = model.notes ++ [ note ]
+      }
+    , Cmd.batch
+        [ postNote note
+        , Nav.pushUrl model.key (Url.Builder.relative [ "/" ] [])
+        ]
+    )
 
 
 handleGotNoteError : Http.Error -> Page
