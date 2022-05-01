@@ -1,10 +1,13 @@
 package testhelpers
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
-func AssertEquals[T comparable](t testing.TB, want, got T, flavor string) bool {
+func AssertEquals[T any](t testing.TB, want, got T, flavor string) bool {
 	t.Helper()
-	if got != want {
+	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Wanted %v %v, but got %v", flavor, want, got)
 		return false
 	}

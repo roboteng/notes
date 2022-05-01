@@ -3,7 +3,7 @@ module Main exposing (..)
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Nav
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (value)
+import Html.Styled.Attributes exposing (href, value)
 import Html.Styled.Events exposing (..)
 import Http
 import Json.Decode exposing (Decoder, field, int, list, map3, string)
@@ -18,13 +18,15 @@ main =
         , view = view
         , subscriptions = subscriptions
         , onUrlChange = onUrlChange
-        , onUrlRequest = onUrlRequest
+        , onUrlRequest = LinkClicked
         }
 
 
 type alias Model =
     { page : Page
     , notes : List Note
+    , key : Nav.Key
+    , url : Url.Url
     }
 
 
@@ -51,11 +53,29 @@ type Msg
     | PostedNote (Result Http.Error PostNoteResponse)
     | View Page
     | UrlChanged Url.Url
+    | LinkClicked Browser.UrlRequest
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
-init _ _ _ =
-    ( Model HomePage [], getNotes )
+init _ url key =
+    case url.path of
+        "/1" ->
+            ( { page = ViewNotePage 1 Nothing
+              , notes = []
+              , key = key
+              , url = url
+              }
+            , getNote 1
+            )
+
+        _ ->
+            ( { page = HomePage
+              , notes = []
+              , key = key
+              , url = url
+              }
+            , getNotes
+            )
 
 
 initNote : Note
@@ -72,18 +92,13 @@ onUrlChange : Url.Url -> Msg
 onUrlChange url =
     case url.path of
         "/edit" ->
-            View (EditNotePage initNote)
+            EditNotePage initNote |> View
 
         "/1" ->
             View (ViewNotePage 1 Nothing)
 
         _ ->
             View HomePage
-
-
-onUrlRequest : UrlRequest -> Msg
-onUrlRequest _ =
-    None
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -169,8 +184,21 @@ update msg model =
                     Cmd.none
             )
 
-        UrlChanged _ ->
-            ( model, Cmd.none )
+        UrlChanged url ->
+            case url.path of
+                "/1" ->
+                    ( model, getNote 1 )
+
+                _ ->
+                    ( model, Cmd.none )
+
+        LinkClicked req ->
+            case req of
+                Browser.Internal url ->
+                    ( model, Nav.pushUrl model.key (Url.toString url) )
+
+                Browser.External url ->
+                    ( model, Nav.load url )
 
 
 
@@ -265,7 +293,7 @@ myBody model =
             [ h1 [] [ text "Notes" ]
             ]
         , main_ []
-            [ button [ onClick (View (EditNotePage initNote)) ] [ text "Add New Note" ]
+            [ a [ href "/edit" ] [ text "Add New note" ]
             , case model.page of
                 EditNotePage note ->
                     newNoteForm note
@@ -302,5 +330,5 @@ showNote note =
     li []
         [ p [] [ text note.title ]
         , p [] [ text note.description ]
-        , button [ onClick (View (ViewNotePage note.id Nothing)) ] [ text "View" ]
+        , a [ href "/1" ] [ text "View" ]
         ]

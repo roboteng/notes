@@ -15,6 +15,9 @@ func MakeRouter(service ty.NoteService) *httprouter.Router {
 	router.GET("/api/notes", GetNtes(service))
 	router.POST("/api/notes", CreateNote(service))
 	router.GET("/api/notes/:id", GetSingleNote(service))
+	router.NotFound = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "index.html")
+	})
 
 	return router
 }
