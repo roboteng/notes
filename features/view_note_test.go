@@ -2,7 +2,7 @@ package features_test
 
 import (
 	"notes/features"
-	testhelpers "notes/testHelpers"
+	ts "notes/testHelpers"
 	"notes/types"
 	"testing"
 )
@@ -22,6 +22,6 @@ func TestViewNotes(t *testing.T) {
 			t.Errorf("Got unexpected error: %v", err)
 			return
 		}
-		testhelpers.AssertEquals(t, notes, []types.Note{}, "Notes list")
+		ts.AssertEquals(t, notes, []types.Note{})
 	})
 }

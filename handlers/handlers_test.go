@@ -33,7 +33,7 @@ func TestGetNotes(t *testing.T) {
 			})
 
 			t.Run("Then the status should be 200", func(t *testing.T) {
-				ts.AssertEquals(t, http.StatusOK, res.StatusCode, "status")
+				ts.AssertEquals(t, http.StatusOK, res.StatusCode)
 			})
 		})
 	})
@@ -70,7 +70,7 @@ func TestCreateNote(t *testing.T) {
 		handler(r, req, httprouter.Params{})
 		res := r.Result()
 		t.Run("Then the response code is 400", func(t *testing.T) {
-			ts.AssertEquals(t, http.StatusBadRequest, res.StatusCode, "Status Code")
+			ts.AssertEquals(t, http.StatusBadRequest, res.StatusCode)
 		})
 	})
 	t.Run("When a request comes in with title in the query, and desc in the body", func(t *testing.T) {
@@ -84,15 +84,15 @@ func TestCreateNote(t *testing.T) {
 		handler(r, req, httprouter.Params{})
 		res := r.Result()
 		t.Run("Then the response is 201 - Created", func(t *testing.T) {
-			ts.AssertEquals(t, http.StatusCreated, res.StatusCode, "Status Code")
+			ts.AssertEquals(t, http.StatusCreated, res.StatusCode)
 		})
 		t.Run("Then the body should be the new id", func(t *testing.T) {
 			got := parse[ty.CreateNoteResponse](res)
-			ts.AssertEquals(t, ty.CreateNoteResponse{Id: 1}, *got, "body")
+			ts.AssertEquals(t, ty.CreateNoteResponse{Id: 1}, *got)
 		})
 		t.Run("Then the service should have a note added", func(t *testing.T) {
-			ts.AssertEquals(t, "my title", service.ViewNotes()[0].Title, "Note Title")
-			ts.AssertEquals(t, "my desc", service.ViewNotes()[0].Contents, "Note Title")
+			ts.AssertEquals(t, "my title", service.ViewNotes()[0].Title)
+			ts.AssertEquals(t, "my desc", service.ViewNotes()[0].Contents)
 		})
 	})
 	t.Run("When two create note requests come in, they should have the correct ids", func(t *testing.T) {
@@ -108,7 +108,7 @@ func TestCreateNote(t *testing.T) {
 		t.Run("The second response should have an id of 2", func(t *testing.T) {
 			got := parse[ty.CreateNoteResponse](res)
 
-			ts.AssertEquals(t, ty.CreateNoteResponse{Id: 2}, *got, "body")
+			ts.AssertEquals(t, ty.CreateNoteResponse{Id: 2}, *got)
 		})
 	})
 	t.Run("When a valid reponse comes in, and when the service gives an error", func(t *testing.T) {
@@ -125,7 +125,7 @@ func TestCreateNote(t *testing.T) {
 		handlers.CreateNote(service)(r, req, httprouter.Params{})
 		res := r.Result()
 		t.Run("Then the response should have a 500 status code", func(t *testing.T) {
-			ts.AssertEquals(t, http.StatusInternalServerError, res.StatusCode, "Status Code")
+			ts.AssertEquals(t, http.StatusInternalServerError, res.StatusCode)
 		})
 	})
 }
@@ -157,7 +157,7 @@ func TestViewSingleNote(t *testing.T) {
 			})
 			res := w.Result()
 			t.Run("then the status code should be 200", func(t *testing.T) {
-				ts.AssertEquals(t, http.StatusOK, res.StatusCode, "Status Code")
+				ts.AssertEquals(t, http.StatusOK, res.StatusCode)
 			})
 			t.Run("Then the body should contain the json for the note", func(t *testing.T) {
 				body, err := ioutil.ReadAll(res.Body)
@@ -169,7 +169,7 @@ func TestViewSingleNote(t *testing.T) {
 				if err != nil {
 					panic(err)
 				}
-				ts.AssertEquals(t, note, got, "Note")
+				ts.AssertEquals(t, note, got)
 			})
 		})
 		t.Run("When a request comes in for a different ID", func(t *testing.T) {
@@ -183,7 +183,7 @@ func TestViewSingleNote(t *testing.T) {
 			})
 			res := w.Result()
 			t.Run("Then the status should be 404", func(t *testing.T) {
-				ts.AssertEquals(t, http.StatusNotFound, res.StatusCode, "Status Code")
+				ts.AssertEquals(t, http.StatusNotFound, res.StatusCode)
 			})
 		})
 	})
