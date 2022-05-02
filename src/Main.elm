@@ -205,15 +205,7 @@ update msg model =
             )
 
         UrlChanged url ->
-            case url.path of
-                "/note/1" ->
-                    ( { model | page = ViewNotePage 1 Nothing }, getNote 1 )
-
-                "/edit" ->
-                    ( { model | page = EditNotePage initNote }, Cmd.none )
-
-                _ ->
-                    ( { model | page = HomePage }, Cmd.none )
+            init () url model.key
 
         LinkClicked req ->
             case req of
