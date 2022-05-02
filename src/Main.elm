@@ -7,6 +7,7 @@ import Html.Styled.Attributes exposing (href, value)
 import Html.Styled.Events exposing (..)
 import Http
 import Json.Decode exposing (Decoder, field, int, list, map3, string)
+import List
 import Url
 import Url.Builder
 
@@ -60,18 +61,44 @@ type Msg
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ url key =
-    case url.path of
-        "/1" ->
-            ( { page = ViewNotePage 1 Nothing
-              , notes = []
-              , key = key
-              , url = url
-              , message = ""
-              }
-            , getNote 1
-            )
+    let
+        paths_ =
+            String.split "/" url.path |> List.tail
+    in
+    case paths_ of
+        Just paths ->
+            case List.head paths of
+                Just "note" ->
+                    ( { page = ViewNotePage 1 Nothing
+                      , notes = []
+                      , key = key
+                      , url = url
+                      , message = ""
+                      }
+                    , getNote 1
+                    )
 
-        _ ->
+                Just "edit" ->
+                    ( { page = EditNotePage initNote
+                      , notes = []
+                      , key = key
+                      , url = url
+                      , message = ""
+                      }
+                    , Cmd.none
+                    )
+
+                _ ->
+                    ( { page = HomePage
+                      , notes = []
+                      , key = key
+                      , url = url
+                      , message = ""
+                      }
+                    , getNotes
+                    )
+
+        Nothing ->
             ( { page = HomePage
               , notes = []
               , key = key
@@ -168,7 +195,10 @@ update msg model =
               }
             , case page of
                 ViewNotePage id _ ->
-                    Cmd.batch [ getNote id, Nav.pushUrl model.key "/1" ]
+                    Cmd.batch [ getNote id, Nav.pushUrl model.key "/note/1" ]
+
+                EditNotePage _ ->
+                    Nav.pushUrl model.key "/edit"
 
                 _ ->
                     Cmd.none
@@ -176,7 +206,7 @@ update msg model =
 
         UrlChanged url ->
             case url.path of
-                "/1" ->
+                "/note/1" ->
                     ( { model | page = ViewNotePage 1 Nothing }, getNote 1 )
 
                 "/edit" ->
