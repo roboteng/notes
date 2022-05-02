@@ -168,7 +168,7 @@ update msg model =
               }
             , case page of
                 ViewNotePage id _ ->
-                    getNote id
+                    Cmd.batch [ getNote id, Nav.pushUrl model.key "/1" ]
 
                 _ ->
                     Cmd.none
@@ -364,8 +364,9 @@ formInput l v action =
 
 showNote : Note -> Html Msg
 showNote note =
-    li []
+    li
+        [ onClick (View (ViewNotePage 1 Nothing))
+        ]
         [ p [] [ text note.title ]
         , p [] [ text note.description ]
-        , a [ href "/1" ] [ text "View" ]
         ]
