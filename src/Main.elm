@@ -76,7 +76,12 @@ init _ url key =
                       , url = url
                       , message = ""
                       }
-                    , getNote 1
+                    , case parseNoteId paths of
+                        Just id ->
+                            getNote id
+
+                        Nothing ->
+                            Cmd.none
                     )
 
                 Just "edit" ->
