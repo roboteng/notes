@@ -2,8 +2,9 @@ module Main exposing (..)
 
 import Browser
 import Browser.Navigation as Nav
+import Css exposing (border3, cursor, listStyleType, none, pointer, px, rgb, solid)
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (href, value)
+import Html.Styled.Attributes exposing (css, href, value)
 import Html.Styled.Events exposing (..)
 import Http
 import Json.Decode exposing (Decoder, field, int, list, map3, string)
@@ -107,6 +108,11 @@ init _ url key =
               }
             , getNotes
             )
+
+
+parseNoteId : List String -> Maybe Int
+parseNoteId url =
+    List.drop 1 url |> List.head |> Maybe.andThen String.toInt
 
 
 initNote : Note
@@ -388,7 +394,14 @@ showNote : Note -> Html Msg
 showNote note =
     li
         [ onClick (View (ViewNotePage 1 Nothing))
+        , css
+            [ border3 (px 1) solid (rgb 127 127 127)
+            , cursor pointer
+            , listStyleType none
+            ]
         ]
-        [ p [] [ text note.title ]
+        [ p
+            []
+            [ text note.title ]
         , p [] [ text note.description ]
         ]
