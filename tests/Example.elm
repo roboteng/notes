@@ -9,4 +9,4 @@ import Url exposing (Protocol(..))
 
 parseJsonNote : Test
 parseJsonNote =
-    test "json should be parsed" (\_ -> Expect.equal (Ok (Note "My Title" "My Desc" 1)) (decodeString noteDecoder """{"title":"My Title","desc":"My Desc","id":1}"""))
+    test "json should be parsed" (\_ -> Expect.equal (Ok (Note "My Title" "My Desc" (Just 1))) (decodeString noteDecoder """{"title":"My Title","desc":"My Desc","id":1}"""))

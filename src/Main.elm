@@ -7,7 +7,7 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css, href, value)
 import Html.Styled.Events exposing (..)
 import Http
-import Json.Decode exposing (Decoder, field, int, list, map3, string)
+import Json.Decode exposing (Decoder, field, int, list, map3, maybe, string)
 import List
 import Url
 import Url.Builder
@@ -37,13 +37,13 @@ type alias Model =
 type Page
     = HomePage
     | EditNotePage Note
-    | ViewNotePage Int (Maybe (Result String Note))
+    | ViewNotePage (Maybe Int) (Maybe (Result String Note))
 
 
 type alias Note =
     { title : String
     , description : String
-    , id : Int
+    , id : Maybe Int
     }
 
 
@@ -70,7 +70,7 @@ init _ url key =
         Just paths ->
             case List.head paths of
                 Just "note" ->
-                    ( { page = ViewNotePage 1 Nothing
+                    ( { page = ViewNotePage (parseNoteId paths) Nothing
                       , notes = []
                       , key = key
                       , url = url
@@ -117,7 +117,7 @@ parseNoteId url =
 
 initNote : Note
 initNote =
-    Note "" "" 0
+    Note "" "" Nothing
 
 
 subscriptions : Model -> Sub Msg
@@ -200,8 +200,13 @@ update msg model =
                 | page = page
               }
             , case page of
-                ViewNotePage id _ ->
-                    Cmd.batch [ getNote id, Nav.pushUrl model.key "/note/1" ]
+                ViewNotePage id_ _ ->
+                    case id_ of
+                        Just id ->
+                            Cmd.batch [ getNote id, Nav.pushUrl model.key (String.concat [ "/note/", String.fromInt id ]) ]
+
+                        Nothing ->
+                            Cmd.none
 
                 EditNotePage _ ->
                     Nav.pushUrl model.key "/edit"
@@ -237,7 +242,7 @@ saveNote model note =
 
 handleGotNoteError : Http.Error -> Page
 handleGotNoteError err =
-    ViewNotePage 0
+    ViewNotePage Nothing
         (Just
             (Err
                 (case err of
@@ -301,7 +306,7 @@ noteDecoder =
     map3 Note
         (field "title" string)
         (field "desc" string)
-        (field "id" int)
+        (field "id" (maybe int))
 
 
 
@@ -334,8 +339,13 @@ viewNav model =
 viewPages : Model -> Html Msg
 viewPages model =
     case model.page of
-        ViewNotePage id res ->
-            viewNoteDetails id res
+        ViewNotePage id_ res ->
+            case id_ of
+                Just id ->
+                    viewNoteDetails id res
+
+                Nothing ->
+                    text "Invalid id"
 
         EditNotePage note ->
             newNoteForm note
@@ -393,7 +403,7 @@ formInput l v action =
 showNote : Note -> Html Msg
 showNote note =
     li
-        [ onClick (View (ViewNotePage 1 Nothing))
+        [ onClick (View (ViewNotePage note.id Nothing))
         , css
             [ border3 (px 1) solid (rgb 127 127 127)
             , cursor pointer
