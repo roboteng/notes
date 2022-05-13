@@ -5,13 +5,11 @@ import (
 	"fmt"
 	"net/http"
 	"notes/features"
-	ty "notes/types"
 
 	"github.com/julienschmidt/httprouter"
 )
 
-func GetNtes(service ty.NotesViewer) func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	feature := features.ViewNotes{Service: service}
+func GetNtes(feature *features.ViewNotes) func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		notes, err := feature.View()
 		if err != nil {

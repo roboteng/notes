@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"notes/features"
 	"notes/handlers"
 	"notes/services"
 	ts "notes/testHelpers"
@@ -25,8 +26,9 @@ func TestGetNotes(t *testing.T) {
 				return make([]ty.Note, 0)
 			},
 		}
+		feature := &features.ViewNotes{Service: service}
 		t.Run("When they go to /api/notes/", func(t *testing.T) {
-			res := getResponse(service)
+			res := getResponse(feature)
 			t.Run("Then they get an empty list", func(t *testing.T) {
 				notes := parse[[]ty.Note](res)
 				ts.AssertEqualSlice(t, make([]ty.Note, 0), *notes)
@@ -47,8 +49,9 @@ func TestGetNotes(t *testing.T) {
 				return []ty.Note{note}
 			},
 		}
+		feature := &features.ViewNotes{Service: service}
 		t.Run("When they go to /api/notes", func(t *testing.T) {
-			res := getResponse(service)
+			res := getResponse(feature)
 			t.Run("Then the response should have that note", func(t *testing.T) {
 				got := parse[[]ty.Note](res)
 				want := []ty.Note{note}
@@ -211,10 +214,10 @@ func parse[T any](res *http.Response) *T {
 	return body
 }
 
-func getResponse(service *ty.AnonNotesViewer) *http.Response {
+func getResponse(feature *features.ViewNotes) *http.Response {
 	wr := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/api/notes", nil)
-	handlers.GetNtes(service)(wr, r, httprouter.Params{})
+	handlers.GetNtes(feature)(wr, r, httprouter.Params{})
 	res := wr.Result()
 	return res
 }

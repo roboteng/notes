@@ -62,11 +62,7 @@ type Msg
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ url key =
-    let
-        paths_ =
-            String.split "/" url.path |> List.tail
-    in
-    case paths_ of
+    case String.split "/" url.path |> List.tail of
         Just paths ->
             case List.head paths of
                 Just "note" ->
