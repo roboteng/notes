@@ -64,51 +64,57 @@ init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ url key =
     case String.split "/" url.path |> List.tail of
         Just paths ->
-            case List.head paths of
-                Just "note" ->
-                    ( { page = ViewNotePage (parseNoteId paths) Nothing
-                      , notes = []
-                      , key = key
-                      , url = url
-                      , message = ""
-                      }
-                    , case parseNoteId paths of
-                        Just id ->
-                            getNote id
-
-                        Nothing ->
-                            Cmd.none
-                    )
-
-                Just "edit" ->
-                    ( { page = EditNotePage initNote
-                      , notes = []
-                      , key = key
-                      , url = url
-                      , message = ""
-                      }
-                    , Cmd.none
-                    )
-
-                _ ->
-                    ( { page = HomePage
-                      , notes = []
-                      , key = key
-                      , url = url
-                      , message = ""
-                      }
-                    , getNotes
-                    )
+            parsePaths paths key url
 
         Nothing ->
-            ( { page = HomePage
+            basicInit key url
+
+
+parsePaths : List String -> Nav.Key -> Url.Url -> ( Model, Cmd Msg )
+parsePaths paths key url =
+    case List.head paths of
+        Just "note" ->
+            ( { page = ViewNotePage (parseNoteId paths) Nothing
               , notes = []
               , key = key
               , url = url
               , message = ""
               }
-            , getNotes
+            , case parseNoteId paths of
+                Just id ->
+                    getNote id
+
+                Nothing ->
+                    Cmd.none
             )
+
+        Just "edit" ->
+            ( { page = EditNotePage initNote
+              , notes = []
+              , key = key
+              , url = url
+              , message = ""
+              }
+            , Cmd.none
+            )
+
+        Just _ ->
+            basicInit key url
+
+        Nothing ->
+            basicInit key url
+
+
+basicInit : Nav.Key -> Url.Url -> ( Model, Cmd Msg )
+basicInit key url =
+    ( { page = HomePage
+      , notes = []
+      , key = key
+      , url = url
+      , message = ""
+      }
+    , getNotes
+    )
 
 
 parseNoteId : List String -> Maybe Int
