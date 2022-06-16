@@ -17,15 +17,15 @@ type NoteService interface {
 }
 
 type NotesViewer interface {
-	ViewNotes() []Note
+	View() []Note
 }
 
 type NoteCreator interface {
-	CreateNote(note Note) (int, error)
+	Save(note Note) (int, error)
 }
 
 type SingleNoteViewer interface {
-	ViewSingleNote(id int) (Note, error)
+	ViewSingle(id int) (Note, error)
 }
 
 type AnonNoteService struct {
@@ -35,26 +35,26 @@ type AnonNoteService struct {
 }
 
 type AnonNotesViewer struct {
-	View func() []Note
+	ViewNotes func() []Note
 }
 
-func (a *AnonNotesViewer) ViewNotes() []Note {
-	return a.View()
+func (a *AnonNotesViewer) View() []Note {
+	return a.ViewNotes()
 }
 
 type AnonNoteCreator struct {
-	Create func(note Note) (int, error)
+	SaveNote func(note Note) (int, error)
 }
 
-func (a *AnonNoteCreator) CreateNote(note Note) (int, error) {
-	return a.Create(note)
+func (a *AnonNoteCreator) Save(note Note) (int, error) {
+	return a.SaveNote(note)
 }
 
 type AnonSingleNoteViewer struct {
 	View func(id int) (Note, error)
 }
 
-func (a *AnonSingleNoteViewer) ViewSingleNote(id int) (Note, error) {
+func (a *AnonSingleNoteViewer) ViewSingle(id int) (Note, error) {
 	return a.View(id)
 }
 

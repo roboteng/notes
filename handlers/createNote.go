@@ -17,7 +17,7 @@ func CreateNote(service ty.NoteCreator) func(w http.ResponseWriter, r *http.Requ
 			if err != nil {
 				panic(err)
 			}
-			id, err := service.CreateNote(ty.Note{Title: title, Contents: string(contents)})
+			id, err := service.Save(ty.Note{Title: title, Contents: string(contents)})
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				return

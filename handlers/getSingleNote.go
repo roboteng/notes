@@ -13,7 +13,7 @@ func GetSingleNote(service types.SingleNoteViewer) func(w http.ResponseWriter, r
 	return func(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		id_ := params.ByName("id")
 		id, _ := strconv.Atoi(id_)
-		note, err := service.ViewSingleNote(id)
+		note, err := service.ViewSingle(id)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			return

@@ -10,11 +10,11 @@ func TestLocalStore(t *testing.T) {
 	t.Run("After a note is created, that same ID should match the stored note", func(t *testing.T) {
 		store := NewInMemoryNoteService()
 		note := types.Note{Title: "First Note", Contents: "I made a note!"}
-		id, err := store.CreateNote(note)
+		id, err := store.Save(note)
 		if err != nil {
 			t.Error(err)
 		}
-		gotNote, err := store.ViewSingleNote(id)
+		gotNote, err := store.ViewSingle(id)
 		if err != nil {
 			t.Error(err)
 		}
@@ -25,7 +25,7 @@ func TestLocalStore(t *testing.T) {
 
 	t.Run("Returns an error if asked for a note that doesn't exist", func(t *testing.T) {
 		store := NewInMemoryNoteService()
-		_, err := store.ViewSingleNote(1)
+		_, err := store.ViewSingle(1)
 		if err != nil {
 			return
 		}
@@ -43,9 +43,9 @@ func TestLocalStore(t *testing.T) {
 	t.Run("Getting an ID for a note that has been deleted returns an error", func(t *testing.T) {
 		store := NewInMemoryNoteService()
 		note := types.Note{Title: "Sample Title", Contents: "I made a note"}
-		id, _ := store.CreateNote(note)
+		id, _ := store.Save(note)
 		store.Delete(id)
-		_, err := store.ViewSingleNote(id)
+		_, err := store.ViewSingle(id)
 		if err != nil {
 			return
 		}
@@ -54,11 +54,11 @@ func TestLocalStore(t *testing.T) {
 
 	t.Run("When two notes are stored, after deleting the first, the second still exists", func(t *testing.T) {
 		store := NewInMemoryNoteService()
-		idToDelete, _ := store.CreateNote(types.Note{Title: "", Contents: ""})
+		idToDelete, _ := store.Save(types.Note{Title: "", Contents: ""})
 		noteToKeep := types.Note{Title: "Second Note", Contents: "I made a note"}
-		idToKeep, _ := store.CreateNote(noteToKeep)
+		idToKeep, _ := store.Save(noteToKeep)
 		store.Delete(idToDelete)
-		note, err := store.ViewSingleNote(idToKeep)
+		note, err := store.ViewSingle(idToKeep)
 		if err != nil {
 			t.Error("Expected to find a note, even though the other was deleted")
 		}

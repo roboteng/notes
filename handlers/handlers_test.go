@@ -22,7 +22,7 @@ import (
 func TestGetNotes(t *testing.T) {
 	t.Run("Given a serive with no notes", func(t *testing.T) {
 		service := &ty.AnonNotesViewer{
-			View: func() []ty.Note {
+			ViewNotes: func() []ty.Note {
 				return make([]ty.Note, 0)
 			},
 		}
@@ -45,7 +45,7 @@ func TestGetNotes(t *testing.T) {
 			Contents: "Note Contents",
 		}
 		service := &ty.AnonNotesViewer{
-			View: func() []ty.Note {
+			ViewNotes: func() []ty.Note {
 				return []ty.Note{note}
 			},
 		}
@@ -66,7 +66,7 @@ func TestCreateNote(t *testing.T) {
 		req := httptest.NewRequest("POST", "/api/notes", nil)
 		r := httptest.NewRecorder()
 		handler := handlers.CreateNote(&ty.AnonNoteCreator{
-			Create: func(note ty.Note) (int, error) {
+			SaveNote: func(note ty.Note) (int, error) {
 				panic("This should not be reached")
 			},
 		})
@@ -94,8 +94,8 @@ func TestCreateNote(t *testing.T) {
 			ts.AssertEquals(t, ty.CreateNoteResponse{Id: 1}, *got)
 		})
 		t.Run("Then the service should have a note added", func(t *testing.T) {
-			ts.AssertEquals(t, "my title", service.ViewNotes()[0].Title)
-			ts.AssertEquals(t, "my desc", service.ViewNotes()[0].Contents)
+			ts.AssertEquals(t, "my title", service.View()[0].Title)
+			ts.AssertEquals(t, "my desc", service.View()[0].Contents)
 		})
 	})
 	t.Run("When two create note requests come in, they should have the correct ids", func(t *testing.T) {
@@ -121,7 +121,7 @@ func TestCreateNote(t *testing.T) {
 		req := httptest.NewRequest("POST", "/api/notes?"+query, nil)
 		r := httptest.NewRecorder()
 		service := &ty.AnonNoteCreator{
-			Create: func(note ty.Note) (int, error) {
+			SaveNote: func(note ty.Note) (int, error) {
 				return 0, errors.New("It Failed!")
 			},
 		}
@@ -199,7 +199,7 @@ type inMemoryNoteCreator struct {
 	notes int
 }
 
-func (i *inMemoryNoteCreator) CreateNote(note ty.Note) (int, error) {
+func (i *inMemoryNoteCreator) Save(note ty.Note) (int, error) {
 	i.notes++
 	return i.notes, nil
 }

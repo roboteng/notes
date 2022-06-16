@@ -7,5 +7,5 @@ type ViewNotes struct {
 }
 
 func (v *ViewNotes) View() ([]types.Note, error) {
-	return v.Service.ViewNotes(), nil
+	return v.Service.View(), nil
 }

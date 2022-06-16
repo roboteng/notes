@@ -10,7 +10,7 @@ import (
 func TestViewNotes(t *testing.T) {
 	t.Run("Takes a service", func(t *testing.T) {
 		service := &types.AnonNotesViewer{
-			View: func() []types.Note {
+			ViewNotes: func() []types.Note {
 				return []types.Note{}
 			},
 		}
