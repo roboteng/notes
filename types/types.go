@@ -6,6 +6,10 @@ type Note struct {
 	Id       int    `json:"id"`
 }
 
+func (n *Note) Equals(other *Note) bool {
+	return n.Title == other.Title && n.Contents == other.Contents
+}
+
 type NoteService interface {
 	NotesViewer
 	NoteCreator
