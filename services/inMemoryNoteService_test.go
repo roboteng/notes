@@ -66,4 +66,18 @@ func TestLocalStore(t *testing.T) {
 			t.Errorf("Got %v, but expected %v", note, noteToKeep)
 		}
 	})
+
+	t.Run("When updating an note, the note should save the update", func(t *testing.T) {
+		store := NewInMemoryNoteService()
+		id, _ := store.Save(types.Note{Title: "Old Title", Contents: "Old Contents"})
+		updatedNote := types.Note{Title: "New Title", Contents: "New Contents"}
+		err := store.Update(id, updatedNote)
+		if err != nil {
+			t.Error("Did not expect an error when updating the note")
+		}
+		note, _ := store.ViewSingle(id)
+		if !note.Equals(&updatedNote) {
+			t.Errorf("Got %v, but wanted %v", note, updatedNote)
+		}
+	})
 }

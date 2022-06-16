@@ -36,10 +36,10 @@ func (i *InMemoryNoteService) View() []types.Note {
 }
 
 func (i *InMemoryNoteService) ViewSingle(id int) (types.Note, error) {
-	if id > len(i.notes) {
+	note, err := i.getNote(id)
+	if err != nil {
 		return types.Note{}, errors.New("No note found with that ID")
 	}
-	note := i.notes[id-1]
 	if note.ignore {
 		return types.Note{}, errors.New("Could not find note")
 	}
@@ -47,9 +47,26 @@ func (i *InMemoryNoteService) ViewSingle(id int) (types.Note, error) {
 }
 
 func (i *InMemoryNoteService) Delete(id int) error {
-	if id > len(i.notes) {
+	note, err := i.getNote(id)
+	if err != nil {
 		return nil
 	}
-	i.notes[id-1].ignore = true
+	note.ignore = true
 	return nil
+}
+
+func (i *InMemoryNoteService) Update(id int, newValues types.Note) error {
+	note, err := i.getNote(id)
+	if err != nil {
+		return err
+	}
+	note.note = newValues
+	return nil
+}
+
+func (i *InMemoryNoteService) getNote(id int) (*noteSlot, error) {
+	if id > len(i.notes) {
+		return nil, errors.New("id out of bounds")
+	}
+	return &i.notes[id-1], nil
 }
