@@ -366,8 +366,7 @@ viewNoteDetails id res =
     div []
         (case res of
             Just r ->
-                [ p [] [ text (String.fromInt id) ]
-                , case r of
+                [ case r of
                     Ok note ->
                         showNote note
 
@@ -421,4 +420,5 @@ showNote note =
             []
             [ text note.title ]
         , p [] [ text note.description ]
+        , button [ onClick (EditNotePage note.id) ] [ text "Edit" ]
         ]

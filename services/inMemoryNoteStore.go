@@ -27,10 +27,9 @@ func (i *InMemoryNoteService) ViewNotes() []types.Note {
 }
 
 func (i *InMemoryNoteService) ViewSingleNote(id int) (types.Note, error) {
-	for _, note := range i.notes {
-		if note.Id == id {
-			return note, nil
-		}
+	if id > len(i.notes) {
+		return types.Note{}, errors.New("No note found with that ID")
 	}
-	return types.Note{}, errors.New("No note found with that ID")
+	note := i.notes[id-1]
+	return note, nil
 }

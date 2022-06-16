@@ -192,6 +192,9 @@ func TestViewSingleNote(t *testing.T) {
 	})
 }
 
+func TestUpdateNote(t *testing.T) {
+}
+
 type inMemoryNoteCreator struct {
 	notes int
 }
