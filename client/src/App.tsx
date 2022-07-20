@@ -1,26 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+
+type note = {
+  title: string
+}
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const [notes, setNotes] = useState<note[]>([]);
+  useEffect(() => {
+    fetch("/api/notes")
+      .then(res =>
+        res.json()
+      )
+      .then(body =>
+        setNotes(body)
+      )
+  }, [])
+  return <>
+    <button onClick={() => {
+      fetch("/api/notes?title=foobar", { method: "POST" })
+    }}>POST</button>
+    <ul>
+      {notes.map((note, i) => <li id={note.title + i}>{note.title}</li>)}
+    </ul>
+  </>;
 }
 
 export default App;
